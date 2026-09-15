@@ -1,0 +1,2649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Parinith MD — six hardware builds: nRF24L01 link, ESP32 RC car, MP3 player, ESP8266 surveying node, 65W PD power bank and DeskBuddy. Code, circuits and parts for each.">
+<meta name="author" content="Parinith MD">
+<meta name="theme-color" content="#15171a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bench Log — Parinith">
+<meta property="og:description" content="Parinith MD — six hardware builds: nRF24L01 link, ESP32 RC car, MP3 player, ESP8266 surveying node, 65W PD power bank and DeskBuddy. Code, circuits and parts for each.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+<style>
+  :root{color-scheme:dark}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<title>Bench Log — Parinith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#15171a; --surface:#22252A; --surface2:#1c2025;
+  --accent:#8FC2D8; --accent-hi:#AFDCEE; --chrome:#CFCAC1;
+  --text:#E4E2DC; --dim:#A8B0B8; --line:#333a42;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"Barlow Condensed","Inter",system-ui,sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.62;font-size:15.5px;
+  -webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;
+  background-image:linear-gradient(rgba(143,194,216,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(143,194,216,.05) 1px,transparent 1px);
+  background-size:30px 30px;
+  mask-image:radial-gradient(ellipse 85% 60% at 50% 0%,#000 25%,transparent 78%)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* ---- hero ---- */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;
+  padding-block:70px 40px;position:relative}
+.buddy{position:absolute;top:6%;right:-10px;width:min(310px,44vw);height:auto;opacity:.78;z-index:0;
+  pointer-events:none;filter:drop-shadow(0 0 40px rgba(143,194,216,.12))}
+.buddy .pup{transition:transform .14s cubic-bezier(.22,1,.3,1)}
+.hero>*:not(.buddy){position:relative;z-index:1}
+.hero .kick{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--accent);text-transform:uppercase}
+.hero h1{font-family:var(--cond);font-weight:700;font-size:clamp(44px,10.5vw,116px);line-height:.88;
+  margin:18px 0 0;letter-spacing:-.015em;text-transform:uppercase;color:#F4F1EB}
+.hero h1 em{font-style:normal;color:var(--accent);display:block}
+.hero p{max-width:60ch;color:var(--dim);font-size:16px;margin:24px 0 0}
+.hero p b{color:var(--text);font-weight:600}
+.hero .who{font-family:var(--mono);font-size:12.5px;color:var(--chrome);margin-top:28px;letter-spacing:.05em;line-height:1.9}
+.hero .who a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(143,194,216,.4)}
+.cue{margin-top:46px;font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--dim);
+  display:flex;align-items:center;gap:10px}
+.cue i{display:block;width:1px;height:34px;background:linear-gradient(var(--accent),transparent);
+  animation:drop 2s ease-in-out infinite;transform-origin:top}
+@keyframes drop{0%,100%{transform:scaleY(.3);opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ---- project ---- */
+.proj{position:relative;padding-block:74px;border-top:1px solid var(--line)}
+.pnum{position:absolute;top:54px;right:-6px;font-family:var(--cond);font-weight:700;
+  font-size:clamp(78px,15vw,150px);line-height:.72;color:#232830;letter-spacing:-.05em;
+  pointer-events:none;user-select:none;z-index:0}
+.phead{position:relative;z-index:1}
+.ptier{font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;color:var(--accent);
+  border:1px solid rgba(143,194,216,.42);display:inline-block;padding:4px 10px;border-radius:2px}
+.pname{font-family:var(--cond);font-weight:700;font-size:clamp(32px,6.4vw,58px);line-height:.98;
+  text-transform:uppercase;margin:14px 0 6px;letter-spacing:-.01em;color:#F4F1EB;overflow:hidden;
+  max-width:min(100%,15ch);padding-right:4px}
+.pname span{display:inline-block;transform:translateY(105%);transition:transform .75s cubic-bezier(.16,1,.3,1) .1s}
+.reveal.in .pname span{transform:translateY(0)}
+.pmeta{font-family:var(--mono);font-size:11px;letter-spacing:.17em;color:var(--dim)}
+.ptag{max-width:62ch;color:#CBD1D7;font-size:16px;margin:16px 0 0}
+.stats{display:flex;flex-wrap:wrap;gap:30px;margin-top:24px}
+.stat b{display:block;font-family:var(--cond);font-weight:700;font-size:32px;color:var(--accent);line-height:1}
+.stat span{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--dim);text-transform:uppercase}
+.repolink{display:inline-block;max-width:100%;margin-top:22px;font-family:var(--mono);font-size:11.5px;
+  color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px;
+  overflow-wrap:anywhere;word-break:break-word;line-height:1.7}
+.repolink:hover{color:var(--accent);border-color:var(--accent)}
+.repolink.off{color:#79838c;border-bottom-style:dashed}
+.stripe{height:5px;margin:30px 0 22px;border-radius:2px;
+  background:repeating-linear-gradient(90deg,var(--surface) 0 52px,rgba(143,194,216,.28) 52px 58px);
+  transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.16,1,.3,1) .2s}
+.reveal.in .stripe{transform:scaleX(1)}
+
+/* ---- OLED buttons, live blue ---- */
+.oledrow{display:flex;flex-wrap:wrap;gap:11px;position:relative;z-index:1}
+.oled{width:116px;padding:7px;border-radius:7px;border:1px solid rgba(255,255,255,.1);
+  background:linear-gradient(var(--surface),#191c20);
+  box-shadow:0 3px 0 rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07);
+  cursor:pointer;font:inherit;color:inherit;text-align:left;display:block;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s}
+.oled:hover{transform:translateY(-2px)}
+.oled:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.55)}
+.oled:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.oled .screen{position:relative;border-radius:3px;background:#04080b;padding:8px 9px 7px;overflow:hidden;
+  box-shadow:inset 0 0 0 1px #000,inset 0 0 16px rgba(0,0,0,.9)}
+.oled .sweep{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(112deg,transparent 22%,rgba(143,194,216,.10) 42%,rgba(175,220,238,.22) 50%,
+    rgba(143,194,216,.10) 58%,transparent 78%);
+  background-size:280% 100%;animation:sweep 4.2s linear infinite}
+@keyframes sweep{from{background-position:180% 0}to{background-position:-80% 0}}
+.oled .screen::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.3) 0 1px,transparent 1px 3px)}
+.oled .lbl,.oled .state,.oled .bars{position:relative}
+.oled .lbl{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;color:#6d7d88;transition:color .25s}
+.oled .state{display:block;font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:.1em;
+  line-height:1.15;color:#63737d;transition:color .25s,text-shadow .25s}
+.oled .bars{display:flex;gap:2px;margin-top:5px}
+.oled .bars i{height:3px;flex:1;background:#63737d;opacity:.5;border-radius:1px;transition:background .25s,opacity .25s}
+.oled[aria-pressed="true"]{box-shadow:0 3px 0 rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07),
+  0 0 0 1px rgba(143,194,216,.5),0 0 26px -6px rgba(143,194,216,.6)}
+.oled[aria-pressed="true"] .sweep{animation-duration:2.1s;
+  background:linear-gradient(112deg,transparent 18%,rgba(143,194,216,.2) 40%,rgba(190,232,248,.42) 50%,
+    rgba(143,194,216,.2) 60%,transparent 82%);background-size:280% 100%}
+.oled[aria-pressed="true"] .lbl{color:#7FAFC4}
+.oled[aria-pressed="true"] .state{animation:livehue 2.6s ease-in-out infinite}
+@keyframes livehue{
+  0%,100%{color:var(--accent);text-shadow:0 0 8px rgba(143,194,216,.45)}
+  50%{color:var(--accent-hi);text-shadow:0 0 16px rgba(175,220,238,.8)}}
+.oled[aria-pressed="true"] .bars i{background:var(--accent);opacity:.9}
+.oled[aria-pressed="true"] .bars i:nth-child(1){animation:pls 1.5s infinite}
+.oled[aria-pressed="true"] .bars i:nth-child(2){animation:pls 1.5s .2s infinite}
+.oled[aria-pressed="true"] .bars i:nth-child(3){animation:pls 1.5s .4s infinite}
+.oled[aria-pressed="true"] .bars i:nth-child(4){animation:pls 1.5s .6s infinite}
+@keyframes pls{0%,100%{opacity:.9}50%{opacity:.3}}
+
+/* ---- panels ---- */
+.panels{margin-top:20px;position:relative;z-index:1}
+.panel{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:26px 24px;
+  color:#C7CDD3;animation:lock .55s cubic-bezier(.16,1,.3,1) both}
+.panel[hidden]{display:none!important}
+@keyframes lock{from{opacity:0;transform:perspective(900px) rotateX(-11deg) translateY(16px)}
+  to{opacity:1;transform:perspective(900px) rotateX(0) translateY(0)}}
+.panel p{margin:0 0 14px}.panel p:last-child{margin-bottom:0}
+.panel b{color:#F0EDE7}
+.panel code{font-family:var(--mono);font-size:13px;color:var(--accent-hi);
+  background:rgba(143,194,216,.1);padding:1px 5px;border-radius:3px}
+.panel .warn{border-left:2px solid var(--chrome);padding-left:15px;color:#D6D2CA}
+
+/* ---- code ---- */
+.cblock+.cblock{margin-top:24px}
+.codehead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cfile{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--chrome)}
+.cfile em{font-style:normal;color:#7e8891;margin-left:10px;font-size:10.5px}
+.cacts{display:flex;flex-wrap:wrap;gap:8px}
+.cbtn{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;padding:8px 13px;border-radius:4px;
+  border:1px solid rgba(143,194,216,.4);background:rgba(143,194,216,.08);color:var(--accent-hi);
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;
+  transition:background .2s,border-color .2s,color .2s}
+.cbtn:hover{background:rgba(143,194,216,.2);border-color:var(--accent)}
+.cbtn .ci{font-size:12px;line-height:1}
+.cbtn.off{border-style:dashed;border-color:#4a535c;background:none;color:#7e8891;cursor:default}
+.cbtn.done{background:rgba(143,194,216,.3);color:#fff;border-color:var(--accent-hi)}
+.prewrap{position:relative}
+.prewrap::after{content:"";position:absolute;left:1px;right:14px;bottom:1px;height:44px;border-radius:0 0 6px 6px;
+  background:linear-gradient(transparent,#0d1114 88%);pointer-events:none;opacity:1;transition:opacity .25s}
+.prewrap.at-end::after{opacity:0}
+.panel pre{margin:0;overflow:auto;max-height:520px;background:#0d1114;border:1px solid #2a3138;
+  border-radius:6px;padding:18px;
+  scrollbar-width:thin;scrollbar-color:#5C8CA4 #12181c}
+.panel pre::-webkit-scrollbar{width:13px;height:13px}
+.panel pre::-webkit-scrollbar-track{background:#12181c;border-radius:7px}
+.panel pre::-webkit-scrollbar-thumb{background:#4E7285;border-radius:7px;border:3px solid #12181c;min-height:44px}
+.panel pre::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.panel pre::-webkit-scrollbar-corner{background:#12181c}
+.panel pre code{background:none;padding:0;color:#D3D9DF;font-size:12.8px;line-height:1.72;display:block;
+  white-space:pre;font-family:var(--mono)}
+
+/* ---- circuit ---- */
+.cdwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cd{display:block;width:100%;min-width:660px;height:auto}
+.cd .tr{stroke-dasharray:1400;stroke-dashoffset:1400}
+.panel:not([hidden]) .cd .tr{animation:draw 1.9s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.cnote{margin-top:20px;font-size:14.5px;color:#B3BAC1;max-width:74ch}
+.plates{display:flex;flex-wrap:wrap;gap:9px}
+.plate{font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:9px 13px;
+  border:1px solid #3c444d;border-radius:3px;color:var(--chrome);background:#1a1e23}
+
+/* ---- footer ---- */
+.foot{padding-block:70px 90px;border-top:1px solid var(--line);color:var(--dim);font-size:15px}
+.foot h3{font-family:var(--cond);font-size:28px;text-transform:uppercase;letter-spacing:.04em;
+  color:#F4F1EB;margin:0 0 14px}
+.foot a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(143,194,216,.4)}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}.pname span{transform:none}.stripe{transform:scaleX(1)}
+  .cd .tr{stroke-dashoffset:0}}
+@media(max-width:620px){
+  .buddy{width:132px;top:0;right:-16px;opacity:.3}
+  .pnum{display:none}.pname{max-width:100%}
+  .oled{width:calc(50% - 6px)}
+  .panel{padding:20px 16px}.panel pre{padding:14px;max-height:400px}
+  .stats{gap:22px}
+  .codehead{justify-content:flex-start}
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <svg class="buddy" viewBox="0 0 240 220" aria-hidden="true">
+  <g class="bd">
+    <path d="M120 16 V44" stroke="#55707f" stroke-width="3"/>
+    <circle cx="120" cy="12" r="7" fill="none" stroke="#5d7a8a" stroke-width="3"/>
+    <rect x="26" y="44" width="188" height="130" rx="26" fill="#1e242b" stroke="#55707f" stroke-width="3"/>
+    <rect x="44" y="62" width="152" height="94" rx="18" fill="#070c0f" stroke="#3a4b56" stroke-width="2"/>
+    <g class="eyeL"><circle cx="86" cy="109" r="24" fill="#0e161b"/><circle class="pup" cx="86" cy="109" r="11" fill="#8FC2D8"/></g>
+    <g class="eyeR"><circle cx="154" cy="109" r="24" fill="#0e161b"/><circle class="pup" cx="154" cy="109" r="11" fill="#8FC2D8"/></g>
+    <rect x="66" y="176" width="108" height="14" rx="7" fill="#1e242b" stroke="#55707f" stroke-width="3"/>
+    <rect x="86" y="196" width="68" height="10" rx="5" fill="#191f25" stroke="#465966" stroke-width="2"/>
+  </g>
+</svg>
+  <div class="kick">Bench log · Bengaluru</div>
+  <h1>Things I<br>built<em>and broke</em></h1>
+  <p>I'm Parinith. <b>Embedded systems and IoT are where I actually live:</b> microcontrollers, sensors, radios, batteries, and anything that can be made to talk to something else over a wire or over the air.</p>
+  <p>Most of my attention goes wherever the hardware is heading next — <b>drones and UAVs</b>, PCB design, hardware prototyping fast enough to find out what is wrong while it still matters. Off the bench: pickleball, cricket, table tennis, and a shelf of diecast models that stopped being a small collection some time ago.</p>
+  <p>Six builds are below, ordered the way I learned them rather than the way they'd look best. Every circuit diagram was drawn from the pin assignments in my own code, and the failures are written down next to the successes — because on this bench they cost about the same and teach rather more.</p>
+  <div class="who">PARINITH MD · ECE undergrad · Bengaluru<br>
+    <a href="https://github.com/MONKEYDPARI019" target="_blank" rel="noopener">github.com/MONKEYDPARI019</a>
+    &nbsp;·&nbsp;
+    <a href="https://www.linkedin.com/in/parinith-md-26a4a126a" target="_blank" rel="noopener">linkedin.com/in/parinith-md</a></div>
+  <div class="cue"><i></i>SCROLL</div>
+</header>
+
+
+<section class="proj reveal" id="p-nrf">
+  <div class="pnum" aria-hidden="true">01</div>
+  <div class="phead">
+    <div class="ptier">BEGINNER</div>
+    <h2 class="pname"><span>nRF24L01 Link</span></h2>
+    <div class="pmeta">ARDUINO NANO ×2 · SPI · 2.4 GHz</div>
+    <p class="ptag">Two boards, one struct, fifty packets a second. The simplest useful thing a radio can do — and the foundation everything else radio-shaped is built on.</p>
+    <div class="stats"><div class="stat"><b data-to="2">2</b><span>boards</span></div><div class="stat"><b data-to="32">32</b><span>byte payload</span></div><div class="stat"><b data-to="20">20</b><span>ms interval</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/nRF24L01_transmitter_and_receiver" target="_blank" rel="noopener">github.com/MONKEYDPARI019/nRF24L01_transmitter_and_receiver &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="nrf-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="nrf-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="nrf-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="nrf-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="nrf-readme"><p>My 5th-semester college mini project. A joystick on one Arduino, live values on another, with the receiver counting packets and shouting on the serial monitor the moment the link drops — because a wireless link that fails silently is worse than one that fails loudly.</p>
+<p>Deliberately minimal and deliberately extensible. One joystick is two channels; widening the struct on both sides is all it takes to add more.</p>
+<p class="warn"><b>The capacitor is not optional.</b> The nRF24L01 draws sharp current spikes on transmit and the Arduino's 3.3V regulator cannot keep up. Without 10µF soldered directly across the module's VCC and GND, it works at arm's length and then fails at random. This is the single most common reason these modules "don't work".</p></div>
+    <div class="panel" id="nrf-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">transmitter.ino<em>34 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="nrf-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="nrf-src-0">#include &lt;SPI.h&gt;
+#include &lt;nRF24L01.h&gt;
+#include &lt;RF24.h&gt;
+
+RF24 radio(9, 10); // CE, CSN
+const uint64_t address = 0xE8E8F0F0E1LL;  // Communication pipe
+
+struct DataPacket {
+  int xValue;
+  int yValue;
+};
+
+DataPacket data;
+
+void setup() {
+  Serial.begin(9600);
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_LOW);
+  radio.stopListening();
+}
+
+void loop() {
+  data.xValue = analogRead(A0);  // Joystick X-axis
+  data.yValue = analogRead(A1);  // Joystick Y-axis
+
+  radio.write(&amp;data, sizeof(DataPacket));  // Send values
+
+  // Debug
+  Serial.print("X: "); Serial.print(data.xValue);
+  Serial.print("\tY: "); Serial.println(data.yValue);
+
+  delay(20);
+}</code></pre></div>
+</div><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">receiver_working.ino<em>50 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="nrf-src-1"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="nrf-src-1">#include &lt;SPI.h&gt;
+#include &lt;nRF24L01.h&gt;
+#include &lt;RF24.h&gt;
+
+RF24 radio(9, 10); // CE, CSN
+const uint64_t address = 0xE8E8F0F0E1LL;  // Must match transmitter
+
+struct DataPacket {
+  int xValue;
+  int yValue;
+};
+
+DataPacket data;
+
+unsigned long lastReceived = 0;
+unsigned int receivedCount = 0;
+unsigned int missedCount = 0;
+const unsigned long timeout = 200; // ms to consider connection lost
+
+void setup() {
+  Serial.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(1, address);
+  radio.setPALevel(RF24_PA_LOW);
+  radio.startListening();
+  Serial.println("Receiver online. Printing RF details...");
+  radio.printDetails();  // Outputs all RF24 config registers over Serial
+}
+
+void loop() {
+  if (radio.available()) {
+    radio.read(&amp;data, sizeof(DataPacket));
+    receivedCount++;
+    lastReceived = millis();
+    Serial.print("Received X: "); Serial.print(data.xValue);
+    Serial.print("\tY: "); Serial.print(data.yValue);
+    Serial.print("\tPacket #: "); Serial.print(receivedCount);
+    Serial.print("\tMissed: "); Serial.println(missedCount);
+    missedCount = 0; // Reset missed counter on successful packet
+  } else {
+    // If timeout exceeded, warn and increment missed count
+    if (millis() - lastReceived &gt; timeout) {
+      missedCount++;
+      Serial.println("Warning: No packet received within timeout!");
+      Serial.print("Missed packets: "); Serial.println(missedCount);
+      lastReceived = millis(); // Reset timer so not to spam Serial
+    }
+  }
+  delay(20);
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="nrf-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img">
+<text x="0" y="14" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">TRANSMITTER</text>
+<text x="500" y="14" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">RECEIVER</text>
+<rect x="20" y="120" width="130" height="150" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="85" y="188" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ARDUINO</text>
+<text x="85" y="204" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">NANO</text>
+<text x="85" y="222" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">transmitter</text>
+<rect x="250" y="130" width="110" height="96" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="305" y="172" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">nRF24L01+</text>
+<text x="305" y="190" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">2.4 GHz</text>
+<rect x="20" y="300" width="130" height="74" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="85" y="332" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">JOYSTICK</text>
+<text x="85" y="350" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">2-axis analog</text>
+<path d="M150 140 H250" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="200" y="135" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D9 CE</text>
+<path d="M150 158 H250" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="200" y="153" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D10 CSN</text>
+<path d="M150 176 H250" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="200" y="171" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D13 SCK</text>
+<path d="M150 194 H250" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="200" y="189" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D11 MOSI</text>
+<path d="M150 212 H250" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="200" y="207" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D12 MISO</text>
+<path d="M150 240 H210 V252 H250" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="212" y="266" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">3.3V</text>
+<path d="M60 300 V284 H120 V300" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<path d="M75 300 V276 H40 V270" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<text x="24" y="292" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">A0 x</text><text x="108" y="292" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">A1 y</text>
+<rect x="266" y="246" width="78" height="20" fill="none" stroke="#cfcac1" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="305" y="260" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">10uF across VCC</text>
+<path d="M370 178 q60 -46 120 0" stroke="#8fc2d8" stroke-width="1.2" fill="none" stroke-dasharray="5 4" class="tr"/>
+<path d="M378 190 q52 -34 104 0" stroke="#8fc2d8" stroke-width="1" fill="none" stroke-dasharray="4 4" opacity=".6" class="tr"/>
+<text x="430" y="126" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em" text-anchor="middle">PIPE 0xE8E8F0F0E1</text>
+<rect x="500" y="130" width="110" height="96" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="555" y="172" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">nRF24L01+</text>
+<text x="555" y="190" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">2.4 GHz</text>
+<rect x="710" y="120" width="130" height="150" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="775" y="188" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ARDUINO</text>
+<text x="775" y="204" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">NANO</text>
+<text x="775" y="222" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">receiver</text>
+<path d="M610 140 H710" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="660" y="135" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D9 CE</text>
+<path d="M610 158 H710" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="660" y="153" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D10 CSN</text>
+<path d="M610 176 H710" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="660" y="171" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D13 SCK</text>
+<path d="M610 194 H710" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="660" y="189" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D11 MOSI</text>
+<path d="M610 212 H710" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="660" y="207" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D12 MISO</text>
+<path d="M610 240 H670 V252 H710" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="672" y="266" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">3.3V</text>
+<rect x="516" y="246" width="78" height="20" fill="none" stroke="#cfcac1" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="555" y="260" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">10uF across VCC</text>
+<path d="M710 300 H840" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/><text x="775" y="316" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">USB / serial 9600</text>
+<text x="0" y="410" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SPI is fixed by hardware. Only CE and CSN are chosen in software: RF24 radio(9, 10).</text>
+</svg></div><p class="cnote">SPI is fixed by the Arduino's hardware peripheral — only CE and CSN are chosen in software. The receiver calls <code>radio.printDetails()</code> at boot; if those registers print as all zeros or all 0xFF, the Arduino is not talking to the radio at all.</p></div>
+    <div class="panel" id="nrf-parts" hidden><div class="plates"><span class="plate">ARDUINO NANO ×2</span><span class="plate">nRF24L01+ ×2</span><span class="plate">ANALOG JOYSTICK</span><span class="plate">10µF ×2</span><span class="plate">3.3V RAIL — NOT 5V</span></div></div>
+  </div>
+</section>
+
+<section class="proj reveal" id="p-rc">
+  <div class="pnum" aria-hidden="true">02</div>
+  <div class="phead">
+    <div class="ptier">BEGINNER+</div>
+    <h2 class="pname"><span>ESP32 RC Car</span></h2>
+    <div class="pmeta">ESP32 · SOFTAP · L298N · SALVAGE BUILD</div>
+    <p class="ptag">Bought broken from a scrap pile, brain replaced. The car hosts its own WiFi network and serves the controls itself — no app, no pairing, no internet.</p>
+    <div class="stats"><div class="stat"><b data-to="6">6</b><span>GPIO</span></div><div class="stat"><b data-to="80">80</b><span>port</span></div><div class="stat"><b data-to="0">0</b><span>apps installed</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/ESP32_RC_car" target="_blank" rel="noopener">github.com/MONKEYDPARI019/ESP32_RC_car &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="rc-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="rc-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="rc-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="rc-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="rc-readme"><p>The ESP32 runs in access-point mode, which means it <em>is</em> the network rather than joining one. Your phone connects to <code>ESP32-RC</code>, opens <code>192.168.4.1</code>, and drives. Nothing else is involved.</p>
+<p>Buttons use <code>ontouchstart</code> and <code>ontouchend</code>, so the car moves while your thumb is down and stops when you let go — the closest a web page gets to a dead-man's switch.</p>
+<p>Most cheap RC cars steer with a plain DC motor pushing against a return spring rather than a servo. That is why steering here is just another H-bridge channel, not a PWM angle.</p></div>
+    <div class="panel" id="rc-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">ESP32_RC_car.ino<em>123 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="rc-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="rc-src-0">#include &lt;WiFi.h&gt;
+#include &lt;WebServer.h&gt;
+
+// WiFi credentials for Access Point mode
+const char* ssid = "ESP32-RC";
+const char* password = "12345678";
+
+WebServer server(80);
+
+// Motor pin configuration
+#define DRIVE_EN 27
+#define DRIVE_IN1 26
+#define DRIVE_IN2 25
+#define STEER_EN 14
+#define STEER_IN1 13   // swapped to fix left/right issue
+#define STEER_IN2 12   // swapped to fix left/right issue
+
+// ---------- Motor Control Functions ----------
+void stopAll() {
+  digitalWrite(DRIVE_IN1, LOW);
+  digitalWrite(DRIVE_IN2, LOW);
+  digitalWrite(STEER_IN1, LOW);
+  digitalWrite(STEER_IN2, LOW);
+  analogWrite(DRIVE_EN, 0);
+  analogWrite(STEER_EN, 0);
+  Serial.println("STOP");
+}
+
+void forward() {
+  digitalWrite(DRIVE_IN1, HIGH);
+  digitalWrite(DRIVE_IN2, LOW);
+  analogWrite(DRIVE_EN, 255);
+  Serial.println("FORWARD");
+}
+
+void backward() {
+  digitalWrite(DRIVE_IN1, LOW);
+  digitalWrite(DRIVE_IN2, HIGH);
+  analogWrite(DRIVE_EN, 255);
+  Serial.println("BACKWARD");
+}
+
+void left() {
+  digitalWrite(STEER_IN1, HIGH);
+  digitalWrite(STEER_IN2, LOW);
+  analogWrite(STEER_EN, 255);
+  Serial.println("LEFT");
+}
+
+void right() {
+  digitalWrite(STEER_IN1, LOW);
+  digitalWrite(STEER_IN2, HIGH);
+  analogWrite(STEER_EN, 255);
+  Serial.println("RIGHT");
+}
+
+// ---------- HTML Joystick Page ----------
+String htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;
+&lt;title&gt;ESP32 RC Car&lt;/title&gt;
+&lt;style&gt;
+body{background:#111;color:white;text-align:center;font-family:sans-serif;}
+button{width:100px;height:100px;margin:10px;font-size:22px;border:none;
+border-radius:50%;background:#444;color:white;}
+button:active{background:#0f0;color:black;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;align-items:center;}
+&lt;/style&gt;
+&lt;script&gt;
+function go(cmd){fetch('/'+cmd);}
+function stopAll(){fetch('/stop');}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;🚗 ESP32 RC Car Control&lt;/h2&gt;
+&lt;div class="grid"&gt;
+  &lt;div&gt;&lt;/div&gt;&lt;button ontouchstart="go('forward')" ontouchend="stopAll()"&gt;↑&lt;/button&gt;&lt;div&gt;&lt;/div&gt;
+  &lt;button ontouchstart="go('left')" ontouchend="stopAll()"&gt;←&lt;/button&gt;
+  &lt;button ontouchstart="go('backward')" ontouchend="stopAll()"&gt;↓&lt;/button&gt;
+  &lt;button ontouchstart="go('right')" ontouchend="stopAll()"&gt;→&lt;/button&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+)rawliteral";
+
+// ---------- Setup ----------
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(DRIVE_IN1, OUTPUT);
+  pinMode(DRIVE_IN2, OUTPUT);
+  pinMode(STEER_IN1, OUTPUT);
+  pinMode(STEER_IN2, OUTPUT);
+  pinMode(DRIVE_EN, OUTPUT);
+  pinMode(STEER_EN, OUTPUT);
+
+  stopAll();
+
+  // Start Wi-Fi Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("\n=== Access Point Started ===");
+  Serial.print("SSID: "); Serial.println(ssid);
+  Serial.print("Password: "); Serial.println(password);
+  Serial.print("IP address: "); Serial.println(WiFi.softAPIP());
+
+  // Set up web routes
+  server.on("/", [](){ server.send(200, "text/html", htmlPage); });
+  server.on("/forward", [](){ forward(); server.send(200, "text/plain", "FWD"); });
+  server.on("/backward", [](){ backward(); server.send(200, "text/plain", "BWD"); });
+  server.on("/left", [](){ left(); server.send(200, "text/plain", "LEFT"); });
+  server.on("/right", [](){ right(); server.send(200, "text/plain", "RIGHT"); });
+  server.on("/stop", [](){ stopAll(); server.send(200, "text/plain", "STOP"); });
+
+  server.begin();
+  Serial.println("Server Ready! ✅");
+}
+
+// ---------- Loop ----------
+void loop() {
+  server.handleClient();
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="rc-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" role="img">
+<rect x="40" y="130" width="150" height="150" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="115" y="196" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ESP32</text>
+<text x="115" y="214" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">SoftAP + web server</text>
+<rect x="360" y="110" width="160" height="200" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="440" y="200" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">L298N</text>
+<text x="440" y="218" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">dual H-bridge</text>
+<path d="M190 148 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="143" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO27 -&gt; ENA</text>
+<path d="M190 168 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="163" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO26 -&gt; IN1</text>
+<path d="M190 188 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="183" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO25 -&gt; IN2</text>
+<path d="M190 226 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="221" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO14 -&gt; ENB</text>
+<path d="M190 246 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="241" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO13 -&gt; IN3</text>
+<path d="M190 266 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="261" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPIO12 -&gt; IN4</text>
+<rect x="680" y="110" width="150" height="70" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="755" y="142" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">DRIVE MOTOR</text>
+<text x="755" y="160" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">rear wheels</text>
+<rect x="680" y="240" width="150" height="70" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="755" y="272" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">STEER MOTOR</text>
+<text x="755" y="290" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">front, spring return</text>
+<path d="M520 140 H680" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="600" y="134" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">OUT1 / OUT2</text>
+<path d="M520 270 H680" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="600" y="264" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">OUT3 / OUT4</text>
+<rect x="360" y="342" width="160" height="56" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="440" y="366" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">7.4V PACK</text>
+<text x="440" y="384" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">motor supply</text>
+<path d="M400 342 V310" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="330" y="330" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">+ to 12V in</text>
+<path d="M480 342 V310" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/><text x="486" y="330" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">- to GND</text>
+<path d="M360 356 H240 V300 H115 V280" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/>
+<text x="150" y="296" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">L298N 5V out -&gt; ESP32 VIN</text>
+<text x="0" y="60" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">PHONE JOINS "ESP32-RC" -- NO ROUTER, NO INTERNET</text>
+<path d="M115 130 V70 H420" stroke="#8fc2d8" stroke-width="1.1" fill="none" stroke-dasharray="4 4" class="tr"/>
+<text x="0" y="414" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">Grounds must be common: battery -, L298N GND and ESP32 GND all tied together.</text>
+</svg></div><p class="cnote">Left and right came out backwards on the first drive. Swapping two <code>#define</code> lines was faster than unsoldering the steering motor — the comment in the code is the honest record of that.</p></div>
+    <div class="panel" id="rc-parts" hidden><div class="plates"><span class="plate">ESP32 DEVKIT</span><span class="plate">L298N H-BRIDGE</span><span class="plate">DC MOTOR ×2</span><span class="plate">SALVAGED CHASSIS</span><span class="plate">7.4V PACK</span></div></div>
+  </div>
+</section>
+
+<section class="proj reveal" id="p-mp3">
+  <div class="pnum" aria-hidden="true">03</div>
+  <div class="phead">
+    <div class="ptier">INTERMEDIATE</div>
+    <h2 class="pname"><span>MP3 Player</span></h2>
+    <div class="pmeta">PRO MINI · DFPLAYER · PAM8403 · VEROBOARD</div>
+    <p class="ptag">It worked. Tracks played, volume moved, the OLED kept up — and then a short between two crowded solder joints killed the DFPlayer and took the build with it.</p>
+    <div class="stats"><div class="stat"><b data-to="30">30</b><span>volume steps</span></div><div class="stat"><b data-to="2048">2048</b><span>bytes of RAM</span></div><div class="stat"><b data-to="1">1</b><span>short circuit</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/MP3-Player" target="_blank" rel="noopener">github.com/MONKEYDPARI019/MP3-Player &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="mp3-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="mp3-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="mp3-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="mp3-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="mp3-readme"><p>This one started years ago, chasing the iPod. First attempt was an ESP32 with a DFPlayer Mini and Bluetooth — and a lesson I did not see coming: <b>source and sink are strict roles.</b> I assumed my player could connect to any Bluetooth speaker whenever I got tired of wires. It cannot. I found A2DP, implemented it, and got a connection that held for a few seconds and dropped.</p>
+<p>So I cut scope instead of forcing it. Bluetooth went in the bin; the standalone player stayed — tracks off SD or USB through the DFPlayer Mini, volume and transport handled by the microcontroller, an OLED showing what just happened. The audio came out far too quiet, so a <b>PAM8403</b> class-D amplifier went in. Then I moved the whole thing to a compact Arduino Pro Mini on veroboard.</p>
+<p class="warn"><b>And that is where it died.</b> I soldered without a placement plan. Components ended up too close, the wiring turned into a nest, and a short took out the DFPlayer Mini. The design was finished and working — the build was not recoverable. Blueprint first, placement second, solder last. I paid for that lesson in hardware.</p></div>
+    <div class="panel" id="mp3-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">mp3_pro_mini.ino<em>139 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="mp3-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="mp3-src-0">#include &lt;Arduino.h&gt;
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;DFRobotDFPlayerMini.h&gt;
+#include &lt;OneButton.h&gt;
+#include &lt;U8g2lib.h&gt;
+#include &lt;Wire.h&gt;
+
+/* ================= PIN DEFINITIONS ================= */
+#define BTN_PREV   2     // Previous / Volume -
+#define BTN_PLAY   3     // Play / Pause
+#define BTN_NEXT   4     // Next / Volume +
+
+#define DF_RX     10     // Arduino RX  &lt;- DFPlayer TX
+#define DF_TX     11     // Arduino TX  -&gt; DFPlayer RX (via 1k)
+
+/* ================= GLOBAL STATE ================= */
+bool playing = true;
+uint8_t volume = 20;     // 0–30
+bool refreshOLED = true;
+
+/* ================= OBJECTS ================= */
+OneButton btnPrev(BTN_PREV, true);
+OneButton btnPlay(BTN_PLAY, true);
+OneButton btnNext(BTN_NEXT, true);
+
+SoftwareSerial dfSerial(DF_RX, DF_TX);
+DFRobotDFPlayerMini dfplayer;
+
+/* SH1106 OLED – LOW RAM PAGE MODE */
+U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0);
+
+/* ================= BUTTON FUNCTIONS ================= */
+
+void playPause() {
+  if (playing) {
+    dfplayer.pause();
+    Serial.println("Paused");
+  } else {
+    dfplayer.start();
+    Serial.println("Playing");
+  }
+  playing = !playing;
+  refreshOLED = true;
+}
+
+void nextTrack() {
+  dfplayer.next();
+  playing = true;
+  Serial.println("Next track");
+  refreshOLED = true;
+}
+
+void prevTrack() {
+  dfplayer.previous();
+  playing = true;
+  Serial.println("Previous track");
+  refreshOLED = true;
+}
+
+void volumeUp() {
+  if (volume &lt; 30) volume++;
+  dfplayer.volume(volume);
+  Serial.print("Volume: ");
+  Serial.println(volume);
+  refreshOLED = true;
+}
+
+void volumeDown() {
+  if (volume &gt; 0) volume--;
+  dfplayer.volume(volume);
+  Serial.print("Volume: ");
+  Serial.println(volume);
+  refreshOLED = true;
+}
+
+/* ================= SETUP ================= */
+void setup() {
+  Serial.begin(9600);
+  Serial.println("MP3 Player Starting...");
+
+  /* OLED */
+  Wire.begin();     // A4 = SDA, A5 = SCL
+  u8g2.begin();
+
+  /* DFPlayer */
+  dfSerial.begin(9600);
+  if (!dfplayer.begin(dfSerial)) {
+    Serial.println("DFPlayer NOT detected");
+    while (1);   // Stop here
+  }
+
+  dfplayer.volume(volume);
+  dfplayer.start();
+  playing = true;
+
+  Serial.println("DFPlayer Ready");
+
+  /* Buttons */
+  btnPrev.attachClick(prevTrack);
+  btnPrev.attachLongPressStart(volumeDown);
+
+  btnNext.attachClick(nextTrack);
+  btnNext.attachLongPressStart(volumeUp);
+
+  btnPlay.attachClick(playPause);
+
+  btnPrev.setPressTicks(600);
+  btnNext.setPressTicks(600);
+
+  refreshOLED = true;
+}
+
+/* ================= LOOP ================= */
+void loop() {
+  btnPrev.tick();
+  btnPlay.tick();
+  btnNext.tick();
+
+  if (refreshOLED) {
+    refreshOLED = false;
+
+    u8g2.firstPage();
+    do {
+      u8g2.setFont(u8g2_font_6x12_tf);
+
+      u8g2.drawStr(0, 12, "MP3 PLAYER");
+
+      if (playing)
+        u8g2.drawStr(0, 32, "STATUS: PLAYING");
+      else
+        u8g2.drawStr(0, 32, "STATUS: PAUSED");
+
+      char buf[16];
+      sprintf(buf, "VOL: %d", volume);
+      u8g2.drawStr(0, 52, buf);
+
+    } while (u8g2.nextPage());
+  }
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="mp3-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" role="img">
+<rect x="340" y="150" width="180" height="170" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="430" y="218" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ARDUINO</text>
+<text x="430" y="236" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">PRO MINI</text>
+<text x="430" y="258" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">5V / 16MHz, 2KB RAM</text>
+<rect x="30" y="34" width="160" height="70" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="64" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SH1106 OLED</text>
+<text x="110" y="82" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">128x64 I2C 0x3C</text>
+<path d="M190 56 H274 V176 H340" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="280" y="52" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SDA -&gt; A4</text>
+<path d="M190 80 H254 V196 H340" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="260" y="76" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SCL -&gt; A5</text>
+<rect x="30" y="160" width="160" height="56" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="184" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">BTN PREV</text>
+<text x="110" y="202" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">click / hold = VOL-</text>
+<rect x="30" y="238" width="160" height="56" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="262" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">BTN PLAY</text>
+<text x="110" y="280" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">play / pause</text>
+<rect x="30" y="316" width="160" height="56" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="340" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">BTN NEXT</text>
+<text x="110" y="358" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">click / hold = VOL+</text>
+<path d="M190 182 H300 V222 H340" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="238" y="178" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">D2</text>
+<path d="M190 260 H340" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="262" y="256" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">D3</text>
+<path d="M190 338 H300 V300 H340" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="238" y="334" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">D4</text>
+<text x="30" y="392" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">all INPUT_PULLUP, other side to GND -- active LOW</text>
+<rect x="680" y="150" width="180" height="96" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="770" y="192" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">DFPlayer Mini</text>
+<text x="770" y="212" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">decoder + SD / USB</text>
+<path d="M520 190 H680" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="600" y="184" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D10 RX &lt;- DF TX</text>
+<path d="M520 214 H600" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<rect x="600" y="204" width="30" height="20" fill="none" stroke="#cfcac1" stroke-width="1"/>
+<text x="615" y="218" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">1k</text>
+<path d="M630 214 H680" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="600" y="246" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D11 TX -&gt; DF RX</text>
+<text x="680" y="128" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">SOFTWARESERIAL 9600</text>
+<rect x="680" y="292" width="180" height="60" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="770" y="318" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">PAM8403</text>
+<text x="770" y="336" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">class-D amplifier</text>
+<rect x="680" y="384" width="180" height="56" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="770" y="410" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SPEAKER</text>
+<text x="770" y="428" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">4-8 ohm</text>
+<path d="M770 246 V292" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="782" y="272" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">DAC L/R</text>
+<path d="M770 352 V384" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/>
+<path d="M340 320 H250 V420 H600 V440" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/>
+<text x="360" y="416" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">5V rail -- amp and DFPlayer share it, grounds common</text>
+<text x="0" y="462" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">Built on veroboard. A short between two crowded joints took out the DFPlayer -- the reason this one is a story, not a product.</text>
+</svg></div><p class="cnote">Two things on a Pro Mini make this tighter than it looks: <code>SoftwareSerial</code> and the I²C display are competing for 2KB of RAM, which is why the OLED runs in U8g2's <b>page mode</b> (<code>_1_</code> in the constructor) instead of holding a full frame buffer. The 1kΩ resistor on the DFPlayer's RX line is a level-matching series resistor, not optional decoration.</p></div>
+    <div class="panel" id="mp3-parts" hidden><div class="plates"><span class="plate">ARDUINO PRO MINI</span><span class="plate">DFPLAYER MINI</span><span class="plate">PAM8403 AMP</span><span class="plate">SH1106 128×64</span><span class="plate">BUTTON ×3</span><span class="plate">SPEAKER 4-8Ω</span><span class="plate">1kΩ ON DF RX</span><span class="plate">VEROBOARD</span></div></div>
+  </div>
+</section>
+
+<section class="proj reveal" id="p-surv">
+  <div class="pnum" aria-hidden="true">04</div>
+  <div class="phead">
+    <div class="ptier">INTERMEDIATE</div>
+    <h2 class="pname"><span>ESP8266 Surveying Node</span></h2>
+    <div class="pmeta">NODEMCU · DHT11 · HC-SR04 · I²C OLED</div>
+    <p class="ptag">Three peripherals, three different protocols, one board — and a web server that never stalls waiting for any of them.</p>
+    <div class="stats"><div class="stat"><b data-to="3">3</b><span>measurements</span></div><div class="stat"><b data-to="2">2</b><span>second poll</span></div><div class="stat"><b data-to="0">0</b><span>delays in loop</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/ESP8266_surveying" target="_blank" rel="noopener">github.com/MONKEYDPARI019/ESP8266_surveying &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="surv-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="surv-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="surv-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="surv-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="surv-readme"><p>A bench instrument for RC work: ambient temperature, humidity and a range measurement, shown on a local OLED and served on a page over the house WiFi.</p>
+<p>The interesting part is not the sensors, it is the scheduling. An I²C display, a one-wire DHT11 and a timed ultrasonic echo all want the processor at different moments, and a web server wants it constantly. Everything is polled on a <code>millis()</code> timer so <code>server.handleClient()</code> is never left waiting.</p>
+<p class="warn"><b>Level mismatch:</b> the HC-SR04 runs on 5V and its ECHO pin swings to 5V, while the ESP8266 is a 3.3V part. It usually survives. The correct fix is a 1kΩ/2kΩ divider on ECHO.</p></div>
+    <div class="panel" id="surv-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">humid.ino<em>107 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="surv-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="surv-src-0">#include &lt;Wire.h&gt;
+#include &lt;U8g2lib.h&gt;
+#include &lt;DHT.h&gt;
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266WebServer.h&gt;
+
+// WiFi credentials
+const char* ssid = "your_ssid";
+const char* password = "your_pass";
+
+// DHT setup
+#define DHTPIN D4
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+// OLED setup (SDA=D2, SCL=D1)
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+
+// Ultrasonic pins
+#define TRIG_PIN D5
+#define ECHO_PIN D6
+
+ESP8266WebServer server(80);
+
+float temperature = 0;
+float humidity = 0;
+float distance = 0;
+
+void handleRoot() {
+  String html = "&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;ESP8266 Sensor Dashboard&lt;/title&gt;&lt;/head&gt;&lt;body&gt;";
+  html += "&lt;h2&gt;ESP8266 DHT &amp; Ultrasonic Sensor&lt;/h2&gt;";
+  html += "&lt;p&gt;&lt;b&gt;Temperature:&lt;/b&gt; " + String(temperature, 1) + " °C&lt;/p&gt;";
+  html += "&lt;p&gt;&lt;b&gt;Humidity:&lt;/b&gt; " + String(humidity, 1) + " %&lt;/p&gt;";
+  html += "&lt;p&gt;&lt;b&gt;Distance:&lt;/b&gt; " + String(distance, 1) + " cm&lt;/p&gt;";
+  html += "&lt;/body&gt;&lt;/html&gt;";
+  server.send(200, "text/html", html);
+}
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(D2, D1);
+  u8g2.begin();
+  dht.begin();
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected!");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", handleRoot);
+  server.begin();
+
+  // Initial message on OLED
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(0, 30, "WiFi Connected!");
+  u8g2.sendBuffer();
+  delay(2000);
+}
+
+float getDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  long duration = pulseIn(ECHO_PIN, HIGH, 20000);
+  float dist = duration * 0.034 / 2;
+  if (dist == 0 || dist &gt; 400) return NAN;
+  return dist;
+}
+
+void loop() {
+  server.handleClient();
+
+  static unsigned long lastRead = 0;
+  if (millis() - lastRead &gt; 2000) {
+    lastRead = millis();
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    float d = getDistance();
+
+    if (!isnan(h)) humidity = h;
+    if (!isnan(t)) temperature = t;
+    if (!isnan(d)) distance = d;
+
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB08_tr);
+    u8g2.drawStr(0, 10, "ESP8266 Dashboard");
+    u8g2.drawStr(0, 30, ("Temp: " + String(temperature, 1) + " C").c_str());
+    u8g2.drawStr(0, 45, ("Hum:  " + String(humidity, 1) + " %").c_str());
+    u8g2.drawStr(0, 60, ("Dist: " + String(distance, 1) + " cm").c_str());
+    u8g2.sendBuffer();
+
+    Serial.printf("Temp: %.1f C | Hum: %.1f %% | Dist: %.1f cm\n", temperature, humidity, distance);
+  }
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="surv-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img">
+<rect x="360" y="150" width="170" height="150" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="445" y="214" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">NodeMCU</text>
+<text x="445" y="232" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ESP8266</text>
+<text x="445" y="252" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">3.3V logic</text>
+<rect x="40" y="70" width="150" height="66" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="115" y="100" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SH1106 OLED</text>
+<text x="115" y="118" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">128x64 I2C 0x3C</text>
+<path d="M190 92 H280 V176 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="286" y="88" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SDA -&gt; D2 / GPIO4</text>
+<path d="M190 114 H258 V196 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="264" y="110" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SCL -&gt; D1 / GPIO5</text>
+<rect x="40" y="200" width="150" height="66" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="115" y="230" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">DHT11</text>
+<text x="115" y="248" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">temp + humidity</text>
+<path d="M190 232 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="272" y="226" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">DATA -&gt; D4 / GPIO2</text>
+<rect x="40" y="320" width="150" height="76" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="115" y="350" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">HC-SR04</text>
+<text x="115" y="368" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">ultrasonic, 5V part</text>
+<path d="M190 342 H300 V268 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="306" y="338" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">TRIG -&gt; D5 / GPIO14</text>
+<path d="M190 372 H330 V288 H360" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="336" y="368" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">ECHO -&gt; D6 / GPIO12</text>
+<rect x="196" y="386" width="118" height="20" fill="none" stroke="#cfcac1" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="255" y="400" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">1k/2k divider on ECHO</text>
+<rect x="700" y="112" width="150" height="80" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="775" y="146" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">WEB PAGE</text>
+<text x="775" y="164" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">port 80, local wifi</text>
+<path d="M530 176 H620 V152 H700" stroke="#8fc2d8" stroke-width="1.1" fill="none" stroke-dasharray="4 4" class="tr"/>
+<text x="600" y="128" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em" text-anchor="middle">STATION MODE</text>
+<rect x="700" y="252" width="150" height="80" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="775" y="286" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SERIAL</text>
+<text x="775" y="304" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">115200 baud</text>
+<path d="M530 276 H700" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/>
+<text x="0" y="424" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">Sensors are polled on a 2 s millis() timer so server.handleClient() is never blocked.</text>
+</svg></div><p class="cnote">0.034 is the speed of sound in centimetres per microsecond. The divide by two is because the pulse travels to the object <em>and back</em>. Anything reading 0 or over 400cm is thrown away as out of range.</p></div>
+    <div class="panel" id="surv-parts" hidden><div class="plates"><span class="plate">NODEMCU ESP8266</span><span class="plate">DHT11</span><span class="plate">HC-SR04</span><span class="plate">SH1106 128×64</span><span class="plate">1k + 2k DIVIDER</span></div></div>
+  </div>
+</section>
+
+<section class="proj reveal" id="p-pwr">
+  <div class="pnum" aria-hidden="true">05</div>
+  <div class="phead">
+    <div class="ptier">ADVANCED</div>
+    <h2 class="pname"><span>65W PD Power Bank</span></h2>
+    <div class="pmeta">LITHIUM · INA260 · HAND-SOLDERED</div>
+    <p class="ptag">The only project here where a mistake costs you a battery instead of an afternoon. Three cells in series, a protection board, and a Nano whose only job is to tell the truth.</p>
+    <div class="stats"><div class="stat"><b data-to="65">65</b><span>watts</span></div><div class="stat"><b data-to="11.1">11.1</b><span>volts nominal</span></div><div class="stat"><b data-to="2500">2500</b><span>mAh</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/65W-PD-powerbank" target="_blank" rel="noopener">github.com/MONKEYDPARI019/65W-PD-powerbank &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="pwr-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="pwr-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="pwr-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="pwr-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="pwr-readme"><p>A power bank I could actually trust. Three 18650 cells in series behind a protection board, a fast-charge module doing the PD negotiation, and an Arduino Nano watching the whole thing through an INA260 current sensor.</p>
+<p>The Nano is <b>not</b> in the power path. Every amp flows through the BMS and the PD module; the microcontroller only measures and displays. If the firmware crashes, the power bank keeps working — which is the entire point of that separation.</p>
+<p>State of charge is a straight linear map from 9.0V to 12.6V. Accurate at rest, optimistic under load, because a loaded pack sags. Coulomb counting is the obvious next step.</p></div>
+    <div class="panel" id="pwr-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">65W_PD_pwrbnk.ino<em>131 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="pwr-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="pwr-src-0">#include &lt;Wire.h&gt;
+#include &lt;Adafruit_INA260.h&gt;
+#include &lt;U8g2lib.h&gt;
+
+U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0);
+Adafruit_INA260 ina260;
+
+int calcSoC(float voltage) {
+  if (voltage &gt;= 12.6) return 100;
+  if (voltage &lt;= 9.0)  return 0;
+  return (int)((voltage - 9.0) / (12.6 - 9.0) * 100.0);
+}
+
+// Battery symbol at (x,y), width=38, height=16
+void drawBattery(int x, int y, int soc) {
+  // Outer frame
+  u8g2.drawFrame(x, y, 34, 14);
+  // Tip
+  u8g2.drawBox(x + 34, y + 4, 3, 6);
+  // Fill
+  int fill = (int)(32.0 * soc / 100.0);
+  if (fill &gt; 0)
+    u8g2.drawBox(x + 1, y + 1, fill, 12);
+  // If full invert text inside
+  if (soc &gt; 20) {
+    u8g2.setDrawColor(0); // black text on white fill
+  } else {
+    u8g2.setDrawColor(1);
+  }
+  u8g2.setDrawColor(1); // reset
+}
+
+// Lightning bolt using lines (charging symbol)
+void drawLightning(int x, int y) {
+  // Simple lightning bolt shape using drawLine
+  u8g2.drawLine(x + 6, y,     x + 2, y + 7);
+  u8g2.drawLine(x + 2, y + 7, x + 5, y + 7);
+  u8g2.drawLine(x + 5, y + 7, x,     y + 14);
+  u8g2.drawLine(x,     y + 14,x + 4, y + 8);
+  u8g2.drawLine(x + 4, y + 8, x + 1, y + 8);
+  u8g2.drawLine(x + 1, y + 8, x + 6, y);
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(2000);
+
+  u8g2.begin();
+  u8g2.setPowerSave(0);
+
+  if (!ina260.begin()) {
+    Serial.println("INA260 not found!");
+    u8g2.firstPage();
+    do {
+      u8g2.setFont(u8g2_font_6x12_tf);
+      u8g2.drawStr(0, 13, "INA260 NOT FOUND");
+      u8g2.drawStr(0, 28, "SDA: A4");
+      u8g2.drawStr(0, 43, "SCL: A5");
+    } while (u8g2.nextPage());
+    while (1);
+  }
+
+  Serial.println("==============================");
+  Serial.println("   Power Station Monitor");
+  Serial.println("==============================");
+  Serial.println("VOLT    CURR     PWR     BAT");
+  Serial.println("------------------------------");
+}
+
+void loop() {
+  float voltage    = ina260.readBusVoltage() / 1000.0;
+  float current    = ina260.readCurrent();
+  float power      = ina260.readPower();
+  int   soc        = calcSoC(voltage);
+  bool  charging   = current &lt; 0;
+  float absCurrent = charging ? -current : current;
+
+  char voltStr[8], currStr[8], pwrStr[8];
+  dtostrf(voltage,        5, 2, voltStr);
+  dtostrf(absCurrent,     6, 1, currStr);
+  dtostrf(power / 1000.0, 4, 2, pwrStr);
+
+  char socBuf[10], line2[20], line3[20], line4[20], line5[20];
+  snprintf(socBuf, sizeof(socBuf), "%d PCT", soc);
+  snprintf(line2,  sizeof(line2),  "VOLT: %sV",  voltStr);
+
+  if (absCurrent &gt;= 1000) {
+    char currAStr[8];
+    dtostrf(absCurrent / 1000.0, 4, 2, currAStr);
+    snprintf(line3, sizeof(line3), "CURR: %sA",  currAStr);
+  } else {
+    snprintf(line3, sizeof(line3), "CURR: %smA", currStr);
+  }
+
+  snprintf(line4, sizeof(line4), "PWR : %sW", pwrStr);
+
+  if (charging)
+    snprintf(line5, sizeof(line5), "STATUS: CHARGING");
+  else
+    snprintf(line5, sizeof(line5), "STATUS: LOAD");
+
+  // Serial
+  Serial.print(voltStr); Serial.print("V    ");
+  Serial.print(currStr); Serial.print("mA    ");
+  Serial.print(pwrStr);  Serial.print("W    ");
+  Serial.print(soc);     Serial.println(" PCT");
+
+  // OLED
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_6x12_tf);
+
+    // Row 1: battery symbol + SOC + lightning if charging
+    drawBattery(0, 0, soc);
+    u8g2.drawStr(42, 12, socBuf);
+    if (charging)
+      drawLightning(110, 0);
+
+    // Divider
+    u8g2.drawHLine(0, 15, 128);
+
+    // Rows 2-5: readings
+    u8g2.drawStr(0, 27, line2);
+    u8g2.drawStr(0, 39, line3);
+    u8g2.drawStr(0, 51, line4);
+    u8g2.drawStr(0, 63, line5);
+
+  } while (u8g2.nextPage());
+
+  delay(500);
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="pwr-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img">
+<text x="0" y="16" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">POWER PATH -- THICK WIRE</text>
+<rect x="20" y="44" width="140" height="76" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="90" y="74" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">3S1P PACK</text>
+<text x="90" y="92" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">11.1V 2500mAh</text>
+<text x="90" y="108" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">9.0V - 12.6V</text>
+<rect x="222" y="44" width="130" height="76" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="287" y="78" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">3S BMS</text>
+<text x="287" y="96" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">protection</text>
+<rect x="414" y="44" width="130" height="76" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="479" y="78" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">INA260</text>
+<text x="479" y="96" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">shunt in series</text>
+<rect x="606" y="44" width="140" height="76" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="676" y="74" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">65W PD</text>
+<text x="676" y="92" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">fast-charge module</text>
+<rect x="800" y="56" width="80" height="52" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="840" y="86" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">USB-C</text>
+<path d="M160 66 H222" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="191" y="60" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">B+</text>
+<path d="M352 66 H414" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="383" y="60" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">P+</text>
+<path d="M544 66 H606" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="575" y="60" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">VIN+</text>
+<path d="M746 82 H800" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/>
+<path d="M160 104 H222" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/><text x="191" y="118" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">B-</text>
+<path d="M352 104 H414 M544 104 H606" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/>
+<path d="M746 100 H772 V140 H90 V120" stroke="#6d7a84" stroke-width="1.3" fill="none" class="tr"/>
+<text x="400" y="154" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">common ground</text>
+<text x="0" y="200" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">SIGNAL PATH -- ONE I2C BUS</text>
+<rect x="330" y="240" width="160" height="120" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="410" y="292" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">ARDUINO</text>
+<text x="410" y="310" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">NANO</text>
+<text x="410" y="330" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">monitor only</text>
+<path d="M410 240 V196 H479 V120" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<text x="492" y="196" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">INA260 0x40</text>
+<rect x="640" y="252" width="160" height="80" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="720" y="284" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SH1106 OLED</text>
+<text x="720" y="302" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">128x64  0x3C</text>
+<path d="M490 272 H640" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="565" y="266" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">A4 SDA</text>
+<path d="M490 300 H640" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="565" y="294" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">A5 SCL</text>
+<path d="M330 300 H250 V360 H410" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/><text x="180" y="304" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">5V / GND</text>
+<text x="0" y="404" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">The Nano is not in the power path. If it crashes, the power bank keeps working.</text>
+<text x="0" y="422" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">Charging is detected by the sign of the current, not by a separate sense pin.</text>
+</svg></div><p class="cnote">The INA260 sits <em>in series</em> on the positive side, between the protection board output and the fast-charge module input, so every amp in or out passes through its internal shunt. Charging is detected from the sign of that current — no separate sense pin.</p></div>
+    <div class="panel" id="pwr-parts" hidden><div class="plates"><span class="plate">ARDUINO NANO</span><span class="plate">INA260</span><span class="plate">SH1106 128×64</span><span class="plate">3S BMS</span><span class="plate">18650 ×3 · 2500mAh</span><span class="plate">65W PD MODULE</span></div></div>
+  </div>
+</section>
+
+<section class="proj reveal" id="p-desk">
+  <div class="pnum" aria-hidden="true">06</div>
+  <div class="phead">
+    <div class="ptier">ADVANCED</div>
+    <h2 class="pname"><span>DeskBuddy</span></h2>
+    <div class="pmeta">ESP8266 · MQTT · LITTLEFS · MOCHI</div>
+    <p class="ptag">Not a sketch — a product. WiFi provisioning, persistent config, two notification transports, and a character called Mochi who blinks at you between alerts.</p>
+    <div class="stats"><div class="stat"><b data-to="8">8</b><span>GPIO used</span></div><div class="stat"><b data-to="3">3</b><span>strapping pins</span></div><div class="stat"><b data-to="2">2</b><span>transports</span></div></div>
+    <a class="repolink" href="https://github.com/MONKEYDPARI019/DeskBuddy" target="_blank" rel="noopener">github.com/MONKEYDPARI019/DeskBuddy &#8599;</a>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="oledrow" role="tablist"><button class="oled" aria-pressed="true" data-target="desk-readme"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">README</span><span class="state">ON</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="desk-code"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CODE</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="desk-circuit"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">CIRCUIT</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button><button class="oled" aria-pressed="false" data-target="desk-parts"><span class="screen"><span class="sweep" aria-hidden="true"></span><span class="lbl">PARTS</span><span class="state">OFF</span><span class="bars"><i></i><i></i><i></i><i></i></span></span></button></div>
+  <div class="panels">
+    <div class="panel" id="desk-readme"><p>A desk companion built on a Wemos D1 Mini. It shows a clock and the weather, forwards phone notifications over HTTP or MQTT, and renders an animated face — Mochi — on a 128×64 frame buffer between alerts.</p>
+<p>Configuration is held in LittleFS so it survives reboots, and there is a captive config portal for first-run WiFi setup instead of credentials baked into the sketch.</p>
+<p class="warn"><b>All eight usable GPIOs are in play, and three of them decide how the ESP8266 boots.</b> GPIO0 and GPIO2 must read HIGH at power-on, GPIO15 must read LOW. DeskBuddy drives all three — as pure outputs with no added pull resistors, which is the only reason it boots at all.</p>
+<p>The one repo that was properly documented from the start: hardware, wiring, pinout, concepts, troubleshooting and a user manual all live alongside the firmware.</p></div>
+    <div class="panel" id="desk-code" hidden><div class="cblock">
+  <div class="codehead">
+    <span class="cfile">DeskBuddy_v1.0_Stable.ino<em>1283 lines &middot; scroll for the rest</em></span>
+    <span class="cacts"><button class="cbtn copy" data-copy="desk-src-0"><span class="ci">&#10697;</span> COPY CODE</button></span>
+  </div>
+  <div class="prewrap"><pre><code id="desk-src-0">/*
+ ╔═══════════════════════════════════════════════════════════════╗
+ ║              🌸  DESK BUDDY  —  ESP8266 Firmware v2.5        ║
+ ║  128×64 SH1106 OLED · WiFi · OWM · MQTT · Notifications · Web ║
+ ╚═══════════════════════════════════════════════════════════════╝
+
+  FEATURES
+  ────────
+  1. Clock Screen (12h AM/PM with date &amp; minute progress bar)
+  2. Weather Screen (OpenWeatherMap with custom 7-seg &amp; pixel icons)
+  3. Mochi Face Screen (Physics eyes, saccades, blinking, 15 moods)
+  4. Notification Screen (MQTT forwarded phone notifications)
+  5. Web Config Portal (Hold BTN2 during boot to edit settings via browser)
+  6. LED Indicators:
+     - 🟢 Green LED (D4): WiFi + MQTT Status
+     - 🟡 Yellow LED (D3): Unread Notifications
+     - 🔴 Red LED (D6): Silent / DND Mode
+  7. Piezo Buzzer (Intro jingle, screen change, emotion tones, alert sound)
+
+  HARDWARE PINS
+  ─────────────
+  SDA: D2  |  SCL: D1  |  BTN1: D5  |  BTN2: D7
+  STATUS_LED (Red): D6  |  NOTIFY_LED (Yellow): D3  |  EMOTION_LED (Green): D4
+  BUZZER: D8
+*/
+
+// ═══════════════════════════════════════════════════════════════
+//  ① INCLUDES
+// ═══════════════════════════════════════════════════════════════
+#include &lt;Arduino.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266HTTPClient.h&gt;
+#include &lt;ESP8266WebServer.h&gt;
+#include &lt;WiFiClientSecure.h&gt;
+#include &lt;PubSubClient.h&gt;
+#include &lt;LittleFS.h&gt;
+#include &lt;ArduinoJson.h&gt;
+#include &lt;U8g2lib.h&gt;
+#include &lt;time.h&gt;
+#include &lt;math.h&gt;
+#include &lt;WiFiManager.h&gt;
+#include &lt;pgmspace.h&gt;
+//==================================================================
+//HEADER
+//==================================================================
+const char WEB_HEADER[] PROGMEM = R"rawliteral(
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta name='viewport' content='width=device-width, initial-scale=1'&gt;
+&lt;title&gt;Desk Buddy Config&lt;/title&gt;
+&lt;style&gt;
+body{font-family:sans-serif;background:#121212;color:#eee;padding:20px;max-width:500px;margin:0 auto;}
+h2{color:#4CAF50;text-align:center;}
+label{display:block;margin-top:12px;font-size:14px;color:#aaa;}
+input[type=text],input[type=password],input[type=number]{width:100%;padding:10px;margin-top:4px;box-sizing:border-box;border-radius:4px;border:1px solid #333;background:#222;color:#fff;}
+input[type=checkbox]{margin-top:12px;}
+input[type=submit],.btn{margin-top:16px;width:100%;padding:12px;background:#4CAF50;border:none;color:white;font-weight:bold;border-radius:4px;cursor:pointer;}
+input[type=submit]:hover,.btn:hover{background:#45a049;}
+.btn-danger{background:#f44336;}
+.btn-danger:hover{background:#d32f2f;}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;🌸 Desk Buddy Config&lt;/h2&gt;
+&lt;form action='/save' method='POST'&gt;
+)rawliteral";
+//================================================================
+//FOOTER
+//================================================================
+const char WEB_FOOTER[] PROGMEM = R"rawliteral(
+&lt;input type='submit' value='Save &amp; Restart'&gt;
+&lt;/form&gt;
+
+&lt;form action='/resetwifi' method='POST'&gt;
+&lt;input type='submit' class='btn btn-danger' value='Reset WiFi Network'&gt;
+&lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+)rawliteral";
+
+// ═══════════════════════════════════════════════════════════════
+//  ② HARDWARE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════
+#define SDA_PIN D2
+#define SCL_PIN D1
+
+#define BTN1 D5
+#define BTN2 D7
+
+#define STATUS_LED  D6  // Red (Silent / DND)
+#define NOTIFY_LED  D3  // Yellow (Notifications)
+#define EMOTION_LED D4  // Green (WiFi / MQTT status)
+
+#define BUZZER_PIN D8
+
+// OLED Display Object (SH1106 I2C 128x64)
+U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE);
+
+// ═══════════════════════════════════════════════════════════════
+//  ③ CONFIGURATION STRUCTURE
+// ═══════════════════════════════════════════════════════════════
+struct Config {
+  // ---------- OpenWeather ----------
+  char owm_key[40];
+  char owm_city[32];
+  char owm_units[10];
+
+  // ---------- MQTT ----------
+  char mqtt_broker[80];
+  int  mqtt_port;
+  char mqtt_user[32];
+  char mqtt_pass[32];
+  char mqtt_topic[40];
+
+  // ---------- HTTP Notification ----------
+  bool http_enabled;
+  int  http_port;
+  char http_endpoint[20];
+
+  // ---------- Device ----------
+  bool silent;
+};
+
+Config config = {
+  // ---------- OpenWeather ----------
+  "5764755d3ff40eb01e9f156f02d1dc09",
+  "Bengaluru",
+  "metric",
+
+  // ---------- MQTT ----------
+  "adb3db2394804d66ac242acd9d202d3b.s1.eu.hivemq.cloud",
+  8883,
+  "",
+  "",
+  "deskbuddy/notify",
+
+  // ---------- HTTP ----------
+  true,          // Enable HTTP notifications
+  80,            // HTTP Server Port
+  "/notify",     // Endpoint
+
+  // ---------- Device ----------
+  false          // Silent Mode
+};
+
+const char* POSIX_TZ = "IST-5:30";
+const char* NTP_SRV  = "pool.ntp.org";
+// ═══════════════════════════════════════════════════════════════
+//  ④ NETWORK &amp; SERVICES
+// ═══════════════════════════════════════════════════════════════
+ESP8266WebServer* server;
+WiFiClientSecure espClient;
+PubSubClient mqttClient(espClient);
+
+bool isConfigPortalMode = false;
+unsigned long mqttConnectAttemptTime = 0;
+const uint16_t MQTT_CONNECT_TIMEOUT = 5000;
+//================================================================
+// FUNCTION PROTOTYPES
+//================================================================
+
+void handleWebRoot();
+void handleWebSave();
+void handleResetWiFi();
+void handleNotify();
+void startConfigPortal();
+void pushNotification(const char* app, const char* title, const char* body);
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑤ TUNABLES &amp; STATES
+// ═══════════════════════════════════════════════════════════════
+#define DEBOUNCE_MS      50
+#define WEATHER_TTL  600000UL // 10 minutes
+#define FRAME_MS         50
+#define BRIGHTNESS      220
+#define CYCLE_HOLD_MS  2000UL // hold 2s to toggle silent mode
+
+enum ScreenMode : uint8_t { MODE_CLOCK, MODE_WEATHER, MODE_MOCHI, MODE_NOTIFY, MODE_COUNT };
+ScreenMode currentMode = MODE_CLOCK;
+
+// Buttons
+bool lastBtn1 = HIGH;
+bool lastBtn2 = HIGH;
+unsigned long btn2PressStart = 0;
+
+// LED &amp; Status Timers
+unsigned long previousBlink = 0;
+bool greenLedState = false;
+
+// Weather State
+struct WX {
+  char  city[24];
+  char  desc[32];
+  char  icon[4];
+  int   tempC, feelsC, humid;
+  float windMs;
+  bool  valid;
+} wx = {};
+uint32_t wxLastFetch   = 0;
+uint32_t minuteStartMs = 0;
+
+// Moods
+#define MOOD_DEFAULT     0
+#define MOOD_HAPPY       1
+#define MOOD_LOVE        2
+#define MOOD_STAR        3
+#define MOOD_WINK        4
+#define MOOD_DIZZY       5
+#define MOOD_ANGRY       6
+#define MOOD_SAD         7
+#define MOOD_SLEEPY      8
+#define MOOD_SURPRISED   9
+#define MOOD_SMUG       10
+#define MOOD_NERVOUS    11
+#define MOOD_CAT        12
+#define MOOD_SLEEPING   13
+#define MOOD_CUTE       14
+#define MOOD_COUNT      15
+
+int currentMood = MOOD_DEFAULT;
+
+// Notifications Buffer
+#define MAX_NOTIFS 8
+struct Notification {
+  char app[16];
+  char title[24];
+  char body[64];
+  uint32_t timestamp;
+};
+Notification notifBuf[MAX_NOTIFS];
+int notifHead = 0;
+int notifCount = 0;
+int unreadNotifs = 0;
+int selectedNotifIdx = 0;
+
+// Popup Overlay
+bool popupActive = false;
+uint32_t popupStartMs = 0;
+char popupTitle[24];
+char popupBody[64];
+
+// Physics Eyes
+struct Eye {
+  float x, y, w, h;
+  float targetX, targetY, targetW, targetH;
+  float pupilX, pupilY, targetPupilX, targetPupilY;
+  bool  blinking;
+  unsigned long lastBlink, nextBlinkTime;
+  void init(float _x, float _y, float _w, float _h){
+    x=_x; y=_y; w=_w; h=_h;
+    targetX=_x; targetY=_y; targetW=_w; targetH=_h;
+    pupilX=0; pupilY=0; targetPupilX=0; targetPupilY=0;
+    blinking=false; lastBlink=0; nextBlinkTime=2000;
+  }
+};
+Eye leftEye, rightEye;
+unsigned long lastSaccade     = 0;
+unsigned long saccadeInterval = 800;
+float breathVal = 0;
+
+// Sparkles
+struct Sparkle { int8_t x, y; uint8_t speed; bool alive; };
+Sparkle sparkles[6];
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑥ BUZZER SYSTEM
+// ═══════════════════════════════════════════════════════════════
+void pTone(uint16_t freq, uint16_t durMs, uint16_t gapMs){
+  if(freq==0) noTone(BUZZER_PIN);
+  else        tone(BUZZER_PIN, freq, durMs);
+  delay(durMs);
+  noTone(BUZZER_PIN);
+  if(gapMs) delay(gapMs);
+}
+
+void buzzScreenChange(){
+  pTone(784,  30, 10);
+  pTone(1047, 50,  0);
+}
+
+void buzzIntro(){
+  pTone(659,  80, 20); pTone(784,  80, 20); pTone(880, 160, 40);
+  pTone(659,  80, 20); pTone(784,  80, 20); pTone(988, 160, 40);
+  pTone(659,  80, 20); pTone(784,  80, 20); pTone(880,  80, 20);
+  pTone(784,  80, 20); pTone(659, 120, 20); pTone(587, 120, 20);
+  pTone(523, 240,  0); delay(80);
+  pTone(523,  60, 15); pTone(587,  60, 15); pTone(659,  60, 15);
+  pTone(784, 100, 15); pTone(880, 100, 15); pTone(1047,300,  0);
+}
+
+void buzzNotification(){
+  if(config.silent) return;
+  pTone(880, 60, 15);
+  pTone(1175, 100, 0);
+}
+
+void buzzEmotion(int mood){
+  if(config.silent) return;
+  switch(mood){
+    case MOOD_DEFAULT:   pTone(523,60,15); pTone(659,60,15); pTone(784,120,0); break;
+    case MOOD_HAPPY:     pTone(523,60,10); pTone(659,60,10); pTone(784,60,10); pTone(1047,120,15); pTone(784,50,10); pTone(1047,150,0); break;
+    case MOOD_LOVE:      pTone(659,120,20); pTone(784,120,20); pTone(880,200,40); pTone(784,80,15); pTone(659,80,15); pTone(587,200,0); break;
+    case MOOD_STAR:      pTone(1047,40,8); pTone(988,40,8); pTone(880,40,8); pTone(784,40,8); pTone(740,40,8); pTone(784,40,8); pTone(880,40,8); pTone(1047,160,0); break;
+    case MOOD_WINK:      pTone(784,80,15); pTone(988,40,10); pTone(784,40,10); pTone(988,120,0); break;
+    case MOOD_DIZZY:     pTone(523,50,8); pTone(554,50,8); pTone(587,50,8); pTone(622,50,8); pTone(587,50,8); pTone(554,50,8); pTone(523,100,0); break;
+    case MOOD_ANGRY:     pTone(247,80,15); pTone(247,80,15); pTone(247,80,15); pTone(247,200,0); break;
+    case MOOD_SAD:       pTone(440,180,30); pTone(392,180,30); pTone(349,180,30); pTone(330,180,30); pTone(294,300,0); break;
+    case MOOD_SLEEPY:    pTone(784,200,40); pTone(659,200,40); pTone(523,200,40); pTone(587,150,30); pTone(523,400,0); break;
+    case MOOD_SURPRISED: pTone(523,30,5); pTone(659,30,5); pTone(784,30,5); pTone(1047,30,5); pTone(1319,200,0); break;
+    case MOOD_SMUG:      pTone(988,120,20); pTone(880,120,20); pTone(784,120,20); pTone(659,300,0); break;
+    case MOOD_NERVOUS:   pTone(659,30,10); pTone(698,25,8); pTone(659,30,10); pTone(622,25,8); pTone(659,30,10); pTone(698,25,8); pTone(784,120,0); break;
+    case MOOD_CAT:       pTone(392,80,20); pTone(440,80,20); pTone(392,80,20); pTone(440,160,15); pTone(392,60,10); pTone(440,200,0); break;
+    case MOOD_SLEEPING:  pTone(523,300,80); pTone(494,300,80); pTone(440,400,0); break;
+    case MOOD_CUTE:      pTone(1047,60,10); pTone(1175,60,10); pTone(1319,60,10); pTone(1047,40,8); pTone(1319,40,8); pTone(1568,40,8); pTone(1047,30,6); pTone(1319,30,6); pTone(1568,150,10); pTone(1319,60,8); pTone(1047,200,0); break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑦ CONFIG STORAGE (LittleFS)
+// ═══════════════════════════════════════════════════════════════
+void loadConfig() {
+  if (!LittleFS.begin()) {
+    Serial.println(F("LittleFS Mount Failed. Formatting..."));
+    LittleFS.format();
+    LittleFS.begin();
+    return;
+  }
+
+  if (!LittleFS.exists("/config.json")) {
+    Serial.println(F("No config file found. Using defaults."));
+    return;
+  }
+
+  File file = LittleFS.open("/config.json", "r");
+  if (!file) return;
+
+  StaticJsonDocument&lt;512&gt; doc;
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
+
+  if (error) {
+    Serial.println(F("Failed to parse config file"));
+    return;
+  }
+
+  // ---------- OpenWeather ----------
+  strlcpy(config.owm_key,     doc["owm_key"]     | config.owm_key,     sizeof(config.owm_key));
+  strlcpy(config.owm_city,    doc["owm_city"]    | config.owm_city,    sizeof(config.owm_city));
+  strlcpy(config.owm_units,   doc["owm_units"]   | config.owm_units,   sizeof(config.owm_units));
+
+  // ---------- MQTT ----------
+  strlcpy(config.mqtt_broker, doc["mqtt_broker"] | config.mqtt_broker, sizeof(config.mqtt_broker));
+  config.mqtt_port = doc["mqtt_port"] | config.mqtt_port;
+  strlcpy(config.mqtt_user,   doc["mqtt_user"]   | config.mqtt_user,   sizeof(config.mqtt_user));
+  strlcpy(config.mqtt_pass,   doc["mqtt_pass"]   | config.mqtt_pass,   sizeof(config.mqtt_pass));
+  strlcpy(config.mqtt_topic,  doc["mqtt_topic"]  | config.mqtt_topic,  sizeof(config.mqtt_topic));
+
+  // ---------- HTTP ----------
+  config.http_enabled = doc["http_enabled"] | config.http_enabled;
+  config.http_port    = doc["http_port"] | config.http_port;
+  strlcpy(config.http_endpoint,
+          doc["http_endpoint"] | config.http_endpoint,
+          sizeof(config.http_endpoint));
+
+  // ---------- Device ----------
+  config.silent = doc["silent"] | config.silent;
+
+  Serial.println(F("Config loaded successfully."));
+}
+//================================================================
+//  SAVE CONFIG
+//================================================================
+void saveConfig() {
+  StaticJsonDocument&lt;512&gt; doc;
+
+  // ---------- OpenWeather ----------
+  doc["owm_key"] = config.owm_key;
+  doc["owm_city"] = config.owm_city;
+  doc["owm_units"] = config.owm_units;
+
+  // ---------- MQTT ----------
+  doc["mqtt_broker"] = config.mqtt_broker;
+  doc["mqtt_port"] = config.mqtt_port;
+  doc["mqtt_user"] = config.mqtt_user;
+  doc["mqtt_pass"] = config.mqtt_pass;
+  doc["mqtt_topic"] = config.mqtt_topic;
+
+  // ---------- HTTP ----------
+  doc["http_enabled"] = config.http_enabled;
+  doc["http_port"] = config.http_port;
+  doc["http_endpoint"] = config.http_endpoint;
+
+  // ---------- Device ----------
+  doc["silent"] = config.silent;
+
+  File file = LittleFS.open("/config.json", "w");
+  if (!file) {
+    Serial.println(F("Failed to open config file for writing"));
+    return;
+  }
+
+  serializeJson(doc, file);
+  file.close();
+
+  Serial.println(F("Config saved successfully."));
+}
+// ═══════════════════════════════════════════════════════════════
+//  ⑧ WEB CONFIG PORTAL
+// ═══════════════════════════════════════════════════════════════
+void handleWebRoot() {
+
+  String html;
+  html.reserve(2500);
+
+  // Load the static header from PROGMEM
+  html += FPSTR(WEB_HEADER);
+
+  // Dynamic fields
+  html += F("&lt;label&gt;Weather City:&lt;/label&gt;&lt;input type='text' name='owm_city' value='");
+  html += config.owm_city;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;OpenWeatherMap API Key:&lt;/label&gt;&lt;input type='text' name='owm_key' value='");
+  html += config.owm_key;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;MQTT Broker:&lt;/label&gt;&lt;input type='text' name='mqtt_broker' value='");
+  html += config.mqtt_broker;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;MQTT Port:&lt;/label&gt;&lt;input type='number' name='mqtt_port' value='");
+  html += config.mqtt_port;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;MQTT Username:&lt;/label&gt;&lt;input type='text' name='mqtt_user' value='");
+  html += config.mqtt_user;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;MQTT Password:&lt;/label&gt;&lt;input type='password' name='mqtt_pass' value='");
+  html += config.mqtt_pass;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;MQTT Topic:&lt;/label&gt;&lt;input type='text' name='mqtt_topic' value='");
+  html += config.mqtt_topic;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;HTTP Notify Port:&lt;/label&gt;&lt;input type='number' name='http_port' value='");
+  html += config.http_port;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;HTTP Notify Endpoint:&lt;/label&gt;&lt;input type='text' name='http_endpoint' value='");
+  html += config.http_endpoint;
+  html += F("'&gt;");
+
+  html += F("&lt;label&gt;&lt;input type='checkbox' name='http_enabled' ");
+
+  if (config.http_enabled)
+    html += F("checked");
+
+  html += F("&gt; Enable HTTP Notifications&lt;/label&gt;&lt;br&gt;");
+
+  html += F("&lt;label&gt;&lt;input type='checkbox' name='silent' ");
+
+  if (config.silent)
+    html += F("checked");
+
+  html += F("&gt; Silent / DND Mode&lt;/label&gt;&lt;br&gt;");
+
+  // Load the static footer from PROGMEM
+  html += FPSTR(WEB_FOOTER);
+
+  server-&gt;send(200, "text/html", html);
+}
+//================================================================
+//
+//================================================================
+void handleResetWiFi() {
+  WiFiManager wm;
+  wm.resetSettings();
+
+  String html;
+  html.reserve(256);
+
+  html += F("&lt;html&gt;&lt;body style='background:#121212;color:#eee;font-family:sans-serif;text-align:center;padding-top:50px;'&gt;");
+  html += F("&lt;h2&gt;🔄 WiFi Reset Done!&lt;/h2&gt;&lt;p&gt;Restarting into WiFi Setup mode...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;");
+
+  server-&gt;send(200, "text/html", html);
+
+  delay(2000);
+
+  if (server) {
+    server-&gt;stop();
+    delete server;
+    server = nullptr;
+  }
+
+  ESP.restart();
+}
+
+//================================================================
+//  HTTP NOTIFICATION ENDPOINT  (e.g. /notify?title=Mother&amp;msg=Hello)
+//================================================================
+void handleNotify() {
+  if (!config.http_enabled) {
+    server-&gt;send(403, F("text/plain"), F("HTTP notifications disabled"));
+    return;
+  }
+
+  char title[24];
+  char body[64];
+  strlcpy(title, server-&gt;hasArg("title") ? server-&gt;arg("title").c_str() : "Notification", sizeof(title));
+  strlcpy(body,  server-&gt;hasArg("msg")   ? server-&gt;arg("msg").c_str()   : "",             sizeof(body));
+
+  pushNotification("HTTP", title, body);
+
+  server-&gt;send(200, F("text/plain"), F("OK"));
+}
+
+void handleWebSave() {
+
+  if (server-&gt;hasArg("owm_city"))
+    strlcpy(config.owm_city, server-&gt;arg("owm_city").c_str(), sizeof(config.owm_city));
+
+  if (server-&gt;hasArg("owm_key"))
+    strlcpy(config.owm_key, server-&gt;arg("owm_key").c_str(), sizeof(config.owm_key));
+
+  if (server-&gt;hasArg("mqtt_broker"))
+    strlcpy(config.mqtt_broker, server-&gt;arg("mqtt_broker").c_str(), sizeof(config.mqtt_broker));
+
+  if (server-&gt;hasArg("mqtt_port"))
+    config.mqtt_port = server-&gt;arg("mqtt_port").toInt();
+
+  if (server-&gt;hasArg("mqtt_user"))
+    strlcpy(config.mqtt_user, server-&gt;arg("mqtt_user").c_str(), sizeof(config.mqtt_user));
+
+  if (server-&gt;hasArg("mqtt_pass"))
+    strlcpy(config.mqtt_pass, server-&gt;arg("mqtt_pass").c_str(), sizeof(config.mqtt_pass));
+
+  if (server-&gt;hasArg("mqtt_topic"))
+    strlcpy(config.mqtt_topic, server-&gt;arg("mqtt_topic").c_str(), sizeof(config.mqtt_topic));
+
+  if (server-&gt;hasArg("http_port"))
+    config.http_port = server-&gt;arg("http_port").toInt();
+
+  if (server-&gt;hasArg("http_endpoint")) {
+    String ep = server-&gt;arg("http_endpoint");
+    if (ep.length() == 0 || ep[0] != '/') ep = "/" + ep;
+    strlcpy(config.http_endpoint, ep.c_str(), sizeof(config.http_endpoint));
+  }
+
+  config.http_enabled = server-&gt;hasArg("http_enabled");
+  config.silent = server-&gt;hasArg("silent");
+
+  saveConfig();
+
+  String html;
+  html.reserve(256);
+
+  html += F("&lt;html&gt;&lt;body style='background:#121212;color:#eee;font-family:sans-serif;text-align:center;padding-top:50px;'&gt;");
+  html += F("&lt;h2&gt;✅ Settings Saved!&lt;/h2&gt;&lt;p&gt;Desk Buddy is restarting...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;");
+
+  server-&gt;send(200, "text/html", html);
+
+  delay(2000);
+
+  if (server) {
+    server-&gt;stop();
+    delete server;
+    server = nullptr;
+  }
+
+  ESP.restart();
+}
+
+void startConfigPortal() {
+
+  isConfigPortalMode = true;
+
+  WiFi.mode(WIFI_AP_STA);
+
+  WiFi.softAP("DeskBuddy_Config");
+
+  IPAddress apIP = WiFi.softAPIP();
+
+  Serial.print(F("Config Portal IP: "));
+  Serial.println(apIP);
+
+  server = new ESP8266WebServer(80);
+
+  server-&gt;on("/", handleWebRoot);
+  server-&gt;on("/save", HTTP_POST, handleWebSave);
+  server-&gt;on("/resetwifi", HTTP_POST, handleResetWiFi);
+  server-&gt;on(config.http_endpoint, HTTP_GET, handleNotify);
+
+  server-&gt;begin();
+
+  display.clearBuffer();
+
+  display.setFont(u8g2_font_7x14B_tf);
+  display.drawStr(10, 18, "CONFIG MODE");
+
+  display.setFont(u8g2_font_5x8_tf);
+  display.drawStr(0, 34, "Connect WiFi:");
+  display.drawStr(0, 44, "DeskBuddy_Config");
+  display.drawStr(0, 58, "192.168.4.1");
+
+  display.sendBuffer();
+}
+// ═══════════════════════════════════════════════════════════════
+//  ⑨ MQTT &amp; NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════
+// Shared push path for both MQTT and HTTP notification sources.
+void pushNotification(const char* app, const char* title, const char* body) {
+  Notification n;
+  n.timestamp = millis();
+  strlcpy(n.app,   app,   sizeof(n.app));
+  strlcpy(n.title, title, sizeof(n.title));
+  strlcpy(n.body,  body,  sizeof(n.body));
+
+  // Push to circular buffer
+  notifBuf[notifHead] = n;
+  notifHead = (notifHead + 1) % MAX_NOTIFS;
+  if (notifCount &lt; MAX_NOTIFS) notifCount++;
+
+  unreadNotifs++;
+
+  // Setup Popup
+  strlcpy(popupTitle, n.title, sizeof(popupTitle));
+  strlcpy(popupBody,  n.body,  sizeof(popupBody));
+  popupActive = true;
+  popupStartMs = millis();
+
+  buzzNotification();
+}
+
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+  char msg[256];
+  if (length &gt;= sizeof(msg)) length = sizeof(msg) - 1;
+  memcpy(msg, payload, length);
+  msg[length] = '\0';
+
+  Serial.print(F("MQTT Received: "));
+  Serial.println(msg);
+
+  StaticJsonDocument&lt;512&gt; doc;
+  DeserializationError err = deserializeJson(doc, msg);
+
+  char app[16], title[24], body[64];
+  if (!err) {
+    strlcpy(app,   doc["app"]   | "Phone",        sizeof(app));
+    strlcpy(title, doc["title"] | "Notification", sizeof(title));
+    strlcpy(body,  doc["body"]  | msg,            sizeof(body));
+  } else {
+    strlcpy(app,   "Message",      sizeof(app));
+    strlcpy(title, "Notification", sizeof(title));
+    strlcpy(body,  msg,            sizeof(body));
+  }
+
+  pushNotification(app, title, body);
+}
+
+void mqttReconnect() {
+  static unsigned long lastAttempt = 0;
+
+  if (WiFi.status() != WL_CONNECTED) {
+    return;
+  }
+
+  if (mqttClient.connected()) {
+    return;
+  }
+
+  // Prevent rapid reconnect attempts
+  if (millis() - lastAttempt &lt; 5000) {
+    return;
+  }
+  lastAttempt = millis();
+
+  // Check credentials
+  if (strlen(config.mqtt_user) == 0 || strlen(config.mqtt_pass) == 0) {
+    return;
+  }
+
+  Serial.println();
+  Serial.println(F("========== MQTT =========="));
+  Serial.print(F("Broker   : "));
+  Serial.println(config.mqtt_broker);
+  Serial.print(F("Port     : "));
+  Serial.println(config.mqtt_port);
+  Serial.print(F("User     : "));
+  Serial.println(config.mqtt_user);
+  Serial.print(F("Topic    : "));
+  Serial.println(config.mqtt_topic);
+
+  // Configure TLS
+  espClient.setInsecure();
+  espClient.setTimeout(10000);
+
+  String clientId = "DeskBuddy-" + String(ESP.getChipId(), HEX);
+
+  Serial.print(F("Connecting to MQTT... "));
+
+  if (mqttClient.connect(
+        clientId.c_str(),
+        config.mqtt_user,
+        config.mqtt_pass)) {
+
+    Serial.println(F("MQTT CONNECTION SUCCESS"));
+
+    if (mqttClient.subscribe(config.mqtt_topic)) {
+      Serial.print(F("Subscribed to: "));
+      Serial.println(config.mqtt_topic);
+    } else {
+      Serial.println(F("Subscription FAILED"));
+    }
+
+  } else {
+    Serial.print(F("FAILED"));
+    Serial.print(F("  rc="));
+    Serial.println(mqttClient.state());
+
+    switch (mqttClient.state()) {
+      case MQTT_CONNECTION_TIMEOUT:
+        Serial.println(F("Reason: Connection timeout"));
+        break;
+      case MQTT_CONNECTION_LOST:
+        Serial.println(F("Reason: Connection lost"));
+        break;
+      case MQTT_CONNECT_FAILED:
+        Serial.println(F("Reason: Network connect failed"));
+        break;
+      case MQTT_DISCONNECTED:
+        Serial.println(F("Reason: Disconnected"));
+        break;
+      case MQTT_CONNECT_BAD_PROTOCOL:
+        Serial.println(F("Reason: Bad protocol"));
+        break;
+      case MQTT_CONNECT_BAD_CLIENT_ID:
+        Serial.println(F("Reason: Bad client ID"));
+        break;
+      case MQTT_CONNECT_UNAVAILABLE:
+        Serial.println(F("Reason: Server unavailable"));
+        break;
+      case MQTT_CONNECT_BAD_CREDENTIALS:
+        Serial.println(F("Reason: Bad username/password"));
+        break;
+      case MQTT_CONNECT_UNAUTHORIZED:
+        Serial.println(F("Reason: Unauthorized"));
+        break;
+      default:
+        Serial.println(F("Reason: Unknown"));
+        break;
+    }
+
+    espClient.stop();
+  }
+
+  Serial.println("==========================");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑩ DRAWING HELPERS &amp; EYE PHYSICS
+// ═══════════════════════════════════════════════════════════════
+static inline float spf(float cur, float tgt, float k){
+  return cur + (tgt - cur) * k;
+}
+
+void roundedBox(int ex, int ey, int ew, int eh, uint8_t v=1, int r=8){
+  r = min(r, min(ew/4, eh/4));
+  display.setDrawColor(v);
+  display.drawBox(ex+r, ey, ew-2*r, eh);
+  display.drawBox(ex, ey+r, ew, eh-2*r);
+  display.drawDisc(ex+r,       ey+r,       r, U8G2_DRAW_ALL);
+  display.drawDisc(ex+ew-1-r,  ey+r,       r, U8G2_DRAW_ALL);
+  display.drawDisc(ex+r,       ey+eh-1-r,  r, U8G2_DRAW_ALL);
+  display.drawDisc(ex+ew-1-r,  ey+eh-1-r,  r, U8G2_DRAW_ALL);
+  display.setDrawColor(1);
+}
+
+void arcBottom(int cx, int cy, int rx, int ry, int thick=5){
+  for(int t=0; t&lt;thick; t++){
+    int rx2=max(1,rx-t), ry2=max(1,ry-t);
+    int px0=-1, py0=-1;
+    for(int ad=0; ad&lt;=180; ad+=2){
+      float a = ad * 0.01745f;
+      int x = cx+(int)(rx2*cosf(a)), y = cy+(int)(ry2*sinf(a));
+      if(px0&gt;=0) display.drawLine(px0,py0,x,y);
+      px0=x; py0=y;
+    }
+  }
+}
+
+void sparkle(int cx, int cy, int s){
+  for(int i=-s; i&lt;=s; i++){
+    display.drawPixel(cx+i, cy);
+    display.drawPixel(cx, cy+i);
+  }
+  for(int d=1; d&lt;s; d++){
+    display.drawPixel(cx+d, cy-d); display.drawPixel(cx-d, cy-d);
+    display.drawPixel(cx+d, cy+d); display.drawPixel(cx-d, cy+d);
+  }
+}
+
+void pixHeart(int cx, int cy){
+  const int8_t pts[][2]={{0,-1},{1,-1},{-1,-1},{2,0},{-2,0},
+                         {2,1},{-2,1},{1,1},{-1,1},{0,2}};
+  for(auto&amp; p : pts) display.drawPixel(cx+p[0], cy+p[1]);
+}
+
+void drawPupil(int cx, int cy, int gx, int gy, int clampR=8){
+  float mag = sqrtf((float)(gx*gx + gy*gy));
+  if(mag &gt; clampR){ gx=(int)(gx*clampR/mag); gy=(int)(gy*clampR/mag); }
+  int px = cx+gx, py = cy+gy;
+  display.setDrawColor(0); display.drawDisc(px, py, 7, U8G2_DRAW_ALL);
+  display.setDrawColor(1); display.drawDisc(px, py, 5, U8G2_DRAW_ALL);
+  display.drawDisc(px-3, py-3, 2, U8G2_DRAW_ALL);
+  display.setDrawColor(0); display.drawDisc(px-3, py-3, 1, U8G2_DRAW_ALL);
+  display.setDrawColor(1);
+}
+
+// Eye Drawers
+void eyeDefault(int ex, int ey, int ew, int eh, int gx, int gy){ roundedBox(ex, ey, ew, eh, 1, 10); drawPupil(ex+ew/2, ey+eh/2, gx, gy, 10); }
+void eyeHappy(int cx, int cy, int gx, int gy){ int br = (int)breathVal; arcBottom(cx, cy+br, 26, 18, 6); display.drawDisc(cx+gx/2-8, cy-8+gy/3, 3, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx+gx/2-8, cy-8+gy/3, 1, U8G2_DRAW_ALL); display.setDrawColor(1); }
+void eyeLove(int cx, int cy, int gx, int gy){ roundedBox(cx-24, cy-22, 48, 44, 1, 8); roundedBox(cx-22, cy-20, 44, 40, 0, 7); pixHeart(cx-5+gx/2, cy-2+gy/2); pixHeart(cx+6+gx/2, cy-2+gy/2); sparkle(cx+18, cy-18, 2); }
+void eyeStar(int cx, int cy, int gx, int gy){ roundedBox(cx-22, cy-20, 44, 40, 1, 7); display.setDrawColor(0); display.drawDisc(cx+gx/2, cy+gy/2, 12, U8G2_DRAW_ALL); display.setDrawColor(1); sparkle(cx+gx/2, cy+gy/2, 9); display.drawDisc(cx-8+gx/3, cy-10+gy/3, 2, U8G2_DRAW_ALL); }
+void eyeWinkClosed(int cx, int cy){ int br = (int)breathVal; display.setDrawColor(1); for(int r=0; r&lt;3; r++) display.drawHLine(cx-20, cy+br+r, 40); display.drawDisc(cx+8, cy-6+br, 2, U8G2_DRAW_ALL); }
+void eyeWinkOpen(int cx, int cy, int gx, int gy){ roundedBox(cx-22, cy-20, 44, 40, 1, 8); drawPupil(cx, cy, gx, gy, 8); }
+void eyeDizzy(int cx, int cy, int gx, int gy){ roundedBox(cx-22, cy-20, 44, 40, 1, 7); int ox=gx/3, oy=gy/3; display.setDrawColor(1); for(int d=0; d&lt;3; d++){ display.drawLine(cx-8+ox+d, cy-8+oy, cx+8+ox+d, cy+8+oy); display.drawLine(cx+8+ox+d, cy-8+oy, cx-8+ox+d, cy+8+oy); } }
+void eyeAngry(int cx, int cy, int gx, int gy, bool isLeft){ int br = (int)breathVal; roundedBox(cx-22, cy-18+br, 44, 38, 1, 5); display.setDrawColor(0); if(!isLeft) for(int i=0;i&lt;16;i++) display.drawHLine(cx-22, cy-18+br+i, (int)(44*(16-i)/16.0f)); else for(int i=0;i&lt;16;i++) display.drawHLine(cx-22+(int)(44*i/16.0f), cy-18+br+i, 44-(int)(44*i/16.0f)); display.setDrawColor(1); drawPupil(cx, cy+3+br, gx, gy, 6); }
+void eyeSad(int cx, int cy, int gx, int gy, bool isLeft){ int br = (int)breathVal; roundedBox(cx-20, cy-12+br, 40, 42, 1, 7); display.setDrawColor(0); if(!isLeft) for(int i=0;i&lt;14;i++) display.drawHLine(cx-20, cy-12+br+i, (int)(40*(14-i)/14.0f)); else for(int i=0;i&lt;14;i++) display.drawHLine(cx-20+(int)(40*i/14.0f), cy-12+br+i, 40-(int)(40*i/14.0f)); display.setDrawColor(1); drawPupil(cx, cy+8+br, gx, gy, 7); }
+void eyeSleepy(int cx, int cy, int gx){ int br = (int)breathVal; roundedBox(cx-22, cy-8+br, 44, 32, 1, 6); display.setDrawColor(0); display.drawBox(cx-22, cy-8+br, 44, 22); display.setDrawColor(1); display.drawDisc(cx+gx/3, cy+14+br, 4, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx+gx/3, cy+14+br, 2, U8G2_DRAW_ALL); display.setDrawColor(1); }
+void eyeSurprised(int cx, int cy, int gx, int gy){ display.setDrawColor(1); display.drawDisc(cx, cy, 22, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx, cy, 20, U8G2_DRAW_ALL); display.setDrawColor(1); display.drawDisc(cx, cy, 20, U8G2_DRAW_ALL); drawPupil(cx, cy, gx, gy, 12); for(int r=0; r&lt;2; r++) display.drawHLine(cx-12, cy-24+r, 24); }
+void eyeSmug(int cx, int cy, int gx, int gy){ int br = (int)breathVal; roundedBox(cx-22, cy-14+br, 44, 32, 1, 6); display.setDrawColor(0); display.drawBox(cx-22, cy-14+br, 44, 18); display.setDrawColor(1); drawPupil(cx, cy+8+br, gx, gy, 5); }
+void eyeNervous(int cx, int cy, int gx, int gy){ int shake = (int)(sinf(millis()/80.0f)*3); roundedBox(cx-20, cy-18+shake, 40, 38, 1, 6); drawPupil(cx+shake, cy+2, gx, gy, 7); for(int i=0; i&lt;3; i++) display.drawVLine(cx-15+i*4, cy-12+shake, 8); }
+void eyeCat(int cx, int cy, int gx, int gy){ display.setDrawColor(1); display.drawDisc(cx, cy, 20, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx, cy, 18, U8G2_DRAW_ALL); display.setDrawColor(1); display.drawDisc(cx, cy, 18, U8G2_DRAW_ALL); int ox = gx/2; for(int dy=-13; dy&lt;=13; dy++){ int hw = (int)(4*sqrtf(fmaxf(0.0f, 1.0f-(float)(dy*dy)/(13.0f*13.0f)))); if(hw&gt;0){ display.setDrawColor(0); display.drawHLine(cx-hw+ox, cy+dy, hw*2+1); if(hw&gt;1){ display.setDrawColor(1); display.drawHLine(cx-hw+1+ox, cy+dy, hw*2-1); display.setDrawColor(0); } } } display.setDrawColor(1); display.drawDisc(cx-6, cy-8, 2, U8G2_DRAW_ALL); }
+void eyeCute(int cx, int cy, int gx, int gy){ display.setDrawColor(1); display.drawDisc(cx, cy, 20, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx, cy, 17, U8G2_DRAW_ALL); display.setDrawColor(1); display.drawDisc(cx, cy, 17, U8G2_DRAW_ALL); float mag = sqrtf((float)(gx*gx + gy*gy)); if(mag &gt; 9){ gx=(int)(gx*9/mag); gy=(int)(gy*9/mag); } display.setDrawColor(0); display.drawDisc(cx+gx, cy+gy, 9, U8G2_DRAW_ALL); display.setDrawColor(1); display.drawDisc(cx+gx, cy+gy, 7, U8G2_DRAW_ALL); display.drawDisc(cx+gx-4, cy+gy-4, 2, U8G2_DRAW_ALL); display.drawDisc(cx+gx+2, cy+gy-3, 1, U8G2_DRAW_ALL); sparkle(cx+16, cy-16, 2); for(int d=0; d&lt;3; d++){ display.drawPixel(cx-18+d*4, cy+14); display.drawPixel(cx-18+d*4, cy+16); } }
+
+void drawMouth(int mood){
+  int cx = 64; int my = 56; display.setDrawColor(1);
+  switch(mood){
+    case MOOD_DEFAULT: for(int r=0; r&lt;2; r++) display.drawHLine(50, my+2+r, 28); break;
+    case MOOD_HAPPY: case MOOD_LOVE: case MOOD_WINK: case MOOD_CUTE:
+    { int w2 = 24, d2 = 10; for(int r=0; r&lt;3; r++){ display.drawLine(cx-w2, my+r, cx-6, my+d2+r); display.drawHLine(cx-6, my+d2+r, 12); display.drawLine(cx+6, my+d2+r, cx+w2, my+r); } break; }
+    case MOOD_ANGRY: for(int r=0; r&lt;3; r++) display.drawHLine(44, my+r, 40); display.setDrawColor(0); display.drawBox(45, my+1, 38, 2); display.setDrawColor(1); break;
+    case MOOD_SLEEPING: for(int r=0; r&lt;2; r++) display.drawHLine(54, my+2+r, 20); break;
+    case MOOD_SURPRISED: display.drawDisc(cx, my+4, 6, U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx, my+4, 4, U8G2_DRAW_ALL); display.setDrawColor(1); break;
+  }
+}
+
+void drawMoodParticles(){
+  uint32_t now = millis();
+  switch(currentMood){
+    case MOOD_SLEEPING: { uint8_t xo = (now/300)%28; display.setFont(u8g2_font_4x6_tf); display.drawStr(76+xo,12,"z"); display.drawStr(84+xo,6,"z"); break; }
+    case MOOD_HAPPY: case MOOD_SURPRISED: for(uint8_t i=0;i&lt;6;i++) if(sparkles[i].alive){ display.drawPixel(sparkles[i].x,(uint8_t)sparkles[i].y); display.drawPixel(sparkles[i].x+1,(uint8_t)sparkles[i].y); } break;
+    case MOOD_LOVE: for(int h=0;h&lt;3;h++){ int8_t hy = (int8_t)(5 + sinf(now/600.0f + h*1.2f)*5); pixHeart(20+h*44,hy); } break;
+    case MOOD_ANGRY: for(int r=0;r&lt;2;r++){ display.drawLine(56+r,4,60+r,10); display.drawLine(60+r,10,64+r,6); } break;
+    case MOOD_CUTE: for(int h=0;h&lt;3;h++){ int8_t hy = (int8_t)(8 + sinf(now/500.0f + h*1.0f)*4); pixHeart(12+h*52,hy); } break;
+  }
+}
+
+void updatePhysics(){
+  unsigned long now = millis();
+  breathVal = sinf(now / 900.0f) * 2.0f;
+  if(now &gt; leftEye.nextBlinkTime){ leftEye.blinking = rightEye.blinking = true; leftEye.lastBlink = now; leftEye.nextBlinkTime = now + random(1800, 5000); }
+  if(leftEye.blinking){ leftEye.targetH = rightEye.targetH = 2; if(now - leftEye.lastBlink &gt; 130) leftEye.blinking = rightEye.blinking = false; }
+  if(!leftEye.blinking &amp;&amp; now - lastSaccade &gt; saccadeInterval){ lastSaccade = now; saccadeInterval = random(500, 2000); const float GX[] = {0,8,-8,0,0,6,-6,6,-6}; const float GY[] = {0,0, 0,-6,6,-5,-5,5,5}; int dir = random(0, 9); leftEye.targetPupilX = rightEye.targetPupilX = GX[dir]; leftEye.targetPupilY = rightEye.targetPupilY = GY[dir]; }
+  float pk = 0.12f; leftEye.pupilX += (leftEye.targetPupilX - leftEye.pupilX)*pk; leftEye.pupilY += (leftEye.targetPupilY - leftEye.pupilY)*pk; rightEye.pupilX += (rightEye.targetPupilX - rightEye.pupilX)*pk; rightEye.pupilY += (rightEye.targetPupilY - rightEye.pupilY)*pk;
+  float ek = 0.14f; leftEye.y = spf(leftEye.y, leftEye.targetY, ek); leftEye.h = spf(leftEye.h, leftEye.targetH, ek); rightEye.y = spf(rightEye.y, rightEye.targetY, ek); rightEye.h = spf(rightEye.h, rightEye.targetH, ek);
+  if(!leftEye.blinking){ leftEye.targetH = rightEye.targetH = 46; leftEye.targetY = 3 + breathVal; rightEye.targetY = 3 + breathVal; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑪ SCREENS
+// ═══════════════════════════════════════════════════════════════
+
+// Helper function for centered text
+void centerStr(const char* s, uint8_t y){
+  display.drawStr(64 - display.getStrWidth(s)/2, y, s);
+}
+
+// Mochi Face Screen
+void drawMochi() {
+  updatePhysics();
+  drawMoodParticles();
+  int lcx = (int)(leftEye.x  + leftEye.w  / 2); int lcy = (int)(leftEye.y  + leftEye.h  / 2);
+  int rcx = (int)(rightEye.x + rightEye.w / 2); int rcy = (int)(rightEye.y + rightEye.h / 2);
+  int gx = (int)leftEye.pupilX; int gy = (int)leftEye.pupilY;
+
+  switch(currentMood) {
+    case MOOD_HAPPY:     eyeHappy(lcx, lcy, gx, gy); eyeHappy(rcx, rcy, gx, gy); break;
+    case MOOD_LOVE:      eyeLove(lcx, lcy, gx, gy); eyeLove(rcx, rcy, gx, gy); break;
+    case MOOD_STAR:      eyeStar(lcx, lcy, gx, gy); eyeStar(rcx, rcy, gx, gy); break;
+    case MOOD_WINK:      eyeWinkClosed(lcx, lcy); eyeWinkOpen(rcx, rcy, gx, gy); break;
+    case MOOD_DIZZY:     eyeDizzy(lcx, lcy, gx, gy); eyeDizzy(rcx, rcy, gx, gy); break;
+    case MOOD_ANGRY:     eyeAngry(lcx, lcy, gx, gy, true); eyeAngry(rcx, rcy, gx, gy, false); break;
+    case MOOD_SAD:       eyeSad(lcx, lcy, gx, gy, true); eyeSad(rcx, rcy, gx, gy, false); break;
+    case MOOD_SLEEPY:    eyeSleepy(lcx, lcy, gx); eyeSleepy(rcx, rcy, gx); break;
+    case MOOD_SURPRISED: eyeSurprised(lcx, lcy, gx, gy); eyeSurprised(rcx, rcy, gx, gy); break;
+    case MOOD_SMUG:      eyeSmug(lcx, lcy, gx, gy); eyeSmug(rcx, rcy, gx, gy); break;
+    case MOOD_NERVOUS:   eyeNervous(lcx, lcy, gx, gy); eyeNervous(rcx, rcy, gx, gy); break;
+    case MOOD_CAT:       eyeCat(lcx, lcy, gx, gy); eyeCat(rcx, rcy, gx, gy); break;
+    case MOOD_CUTE:      eyeCute(lcx, lcy, gx, gy); eyeCute(rcx, rcy, gx, gy); break;
+    case MOOD_SLEEPING:  eyeWinkClosed(lcx, lcy); eyeWinkClosed(rcx, rcy); break;
+    default:             eyeDefault((int)leftEye.x, (int)leftEye.y, (int)leftEye.w, (int)leftEye.h, gx, gy);
+                         eyeDefault((int)rightEye.x, (int)rightEye.y, (int)rightEye.w, (int)rightEye.h, gx, gy); break;
+  }
+  drawMouth(currentMood);
+}
+
+// Clock Screen
+void drawClock(){
+  time_t now = time(nullptr);
+  struct tm t;
+  localtime_r(&amp;now, &amp;t);
+
+  display.setFont(u8g2_font_6x10_tf);
+  char date[20];
+  strftime(date, sizeof(date), "%a, %d %b %Y", &amp;t);
+  centerStr(date, 10);
+
+  for(uint8_t x=0; x&lt;128; x+=4) display.drawPixel(x, 13);
+
+  display.setFont(u8g2_font_logisoso32_tf);
+  char hhmm[6];
+  uint8_t hr = t.tm_hour % 12; if(hr==0) hr=12;
+  snprintf(hhmm, sizeof(hhmm), "%02d:%02d", hr, t.tm_min);
+  uint8_t tw = display.getStrWidth(hhmm);
+  display.drawStr(64 - tw/2 - 10, 50, hhmm);
+
+  display.setFont(u8g2_font_6x10_tf);
+  display.drawStr(64 + tw/2 - 8, 40, t.tm_hour&lt;12 ? "AM" : "PM");
+
+  if(t.tm_sec == 0) minuteStartMs = millis();
+  if(minuteStartMs == 0) minuteStartMs = millis() - (uint32_t)t.tm_sec * 1000;
+  uint8_t barW = (uint8_t)((millis()-minuteStartMs) * 126UL / 60000UL);
+  if(barW &gt; 126) barW = 126;
+  display.drawHLine(1, 62, barW);
+}
+
+// Weather Screen
+void wxSeg(char ch, int ox, int oy, uint8_t sw=10, uint8_t sh=8, uint8_t t=2){
+  const bool S[10][7]={{1,1,1,1,1,1,0},{0,1,1,0,0,0,0},{1,1,0,1,1,0,1},{1,1,1,1,0,0,1},{0,1,1,0,0,1,1},{1,0,1,1,0,1,1},{1,0,1,1,1,1,1},{1,1,1,0,0,0,0},{1,1,1,1,1,1,1},{1,1,1,1,0,1,1}};
+  if(ch&lt;'0'||ch&gt;'9') return;
+  const bool* s=S[ch-'0'];
+  if(s[0]) display.drawBox(ox+t,oy,sw-2*t,t); if(s[1]) display.drawBox(ox+sw-t,oy+t,t,sh-t); if(s[2]) display.drawBox(ox+sw-t,oy+sh+1,t,sh-t); if(s[3]) display.drawBox(ox+t,oy+2*sh-t,sw-2*t,t); if(s[4]) display.drawBox(ox,oy+sh+1,t,sh-t); if(s[5]) display.drawBox(ox,oy+t,t,sh-t); if(s[6]) display.drawBox(ox+t,oy+sh-1,sw-2*t,t);
+}
+void wxBigNum(const char* s, int ox, int oy){ int cx = ox; for(;*s;s++){ wxSeg(*s,cx,oy); cx+=12; } }
+void wxIconSun(int cx, int cy){ display.drawDisc(cx,cy,7,U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(cx,cy,4,U8G2_DRAW_ALL); display.setDrawColor(1); for(int a=0;a&lt;8;a++){ float ang=a*3.14159f/4; display.drawLine(cx+(int)(9*cosf(ang)),cy+(int)(9*sinf(ang)),cx+(int)(12*cosf(ang)),cy+(int)(12*sinf(ang))); } }
+void wxIconCloud(int cx, int cy){ display.drawDisc(cx-4,cy+2,4,U8G2_DRAW_ALL); display.drawDisc(cx+3,cy+2,3,U8G2_DRAW_ALL); display.drawDisc(cx,cy-1,4,U8G2_DRAW_ALL); display.drawBox(cx-7,cy+3,14,3); }
+void wxIconRain(int cx, int cy){ wxIconCloud(cx,cy-3); for(int i=0;i&lt;3;i++) display.drawLine(cx-4+i*4,cy+4,cx-6+i*4,cy+9); }
+void wxIconThunder(int cx, int cy){ wxIconCloud(cx,cy-3); display.drawLine(cx+2,cy+4,cx-1,cy+8); display.drawLine(cx-1,cy+8,cx+1,cy+8); display.drawLine(cx+1,cy+8,cx-2,cy+11); }
+void wxIconSnow(int cx, int cy){ wxIconCloud(cx,cy-3); for(int i=0;i&lt;3;i++){ int sx=cx-4+i*4; display.drawPixel(sx,cy+5); display.drawPixel(sx-1,cy+6); display.drawPixel(sx+1,cy+6); display.drawPixel(sx,cy+7); } }
+void wxIconMist(int cx, int cy){ for(int i=0;i&lt;4;i++){ uint8_t w=10+(i%2)*4, x=cx-w/2; display.drawHLine(x,cy-3+i*3,w); } }
+
+void drawWeather(){
+  if(!wx.valid){
+    display.setFont(u8g2_font_6x10_tf);
+    centerStr("Fetching Weather...", 32);
+    return;
+  }
+  #define CSTR(str,zcx,y) display.drawStr((zcx)-display.getStrWidth(str)/2,(y),(str))
+  display.setFont(u8g2_font_4x6_tf);
+  display.drawHLine(0, 0, 128); display.drawHLine(0, 9, 128); display.drawHLine(0, 37, 128); display.drawHLine(0, 63, 128);
+  display.drawVLine(42, 9, 28); display.drawVLine(85, 9, 28); display.drawVLine(63, 37, 26);
+
+  char city[16]; strncpy(city, wx.city, 15); city[15]='\0';
+  for(uint8_t i=0; city[i]; i++) city[i]=toupper((unsigned char)city[i]);
+  uint8_t cw=display.getStrWidth(city), hx=64-cw/2;
+  display.drawStr(hx,7,city);
+  if(hx&gt;4) display.drawHLine(2,4,hx-4); if(hx+cw+3&lt;126) display.drawHLine(hx+cw+3,4,126-(hx+cw+3));
+
+  int iconCode=atoi(wx.icon);
+  if      (iconCode&lt;=1)  wxIconSun(21,23);
+  else if (iconCode&lt;=2)  { wxIconSun(16,19); wxIconCloud(22,24); }
+  else if (iconCode&lt;=4)  wxIconCloud(21,23);
+  else if (iconCode&lt;=10) wxIconRain(21,22);
+  else if (iconCode==11) wxIconThunder(21,22);
+  else if (iconCode==13) wxIconSnow(21,22);
+  else                   wxIconMist(21,23);
+
+  char tmp[5]; snprintf(tmp,sizeof(tmp),"%d",wx.tempC);
+  uint8_t digits=strlen(tmp), tempW=digits*12-2;
+  uint8_t groupW=tempW+3+9, tempX=63-groupW/2;
+  wxBigNum(tmp,tempX,12);
+  uint8_t ax=tempX+tempW+3;
+  display.drawDisc(ax+1,12,2,U8G2_DRAW_ALL); display.setDrawColor(0); display.drawDisc(ax+1,12,1,U8G2_DRAW_ALL); display.setDrawColor(1);
+  display.drawHLine(ax+4,12,4); display.drawHLine(ax+4,16,4); display.drawVLine(ax+4,12,5);
+
+  char fl[9]; snprintf(fl,sizeof(fl),"FL %dC",wx.feelsC); CSTR(fl,106,17); display.drawHLine(87,20,38);
+  char desc[10]; strncpy(desc,wx.desc,9); desc[9]='\0'; desc[0]=toupper((unsigned char)desc[0]); for(uint8_t i=1;desc[i];i++) desc[i]=tolower((unsigned char)desc[i]); CSTR(desc,106,30);
+
+  char humline[12]; snprintf(humline,sizeof(humline),"HUM %d%%",wx.humid); CSTR(humline,31,45);
+  uint8_t hbw=(uint8_t)((uint16_t)wx.humid*57U/100U); display.drawHLine(2,49,59); display.drawHLine(2,52,59); display.drawVLine(2,49,4); display.drawVLine(60,49,4); display.drawBox(3,50,hbw,2);
+
+  char wd[9]; snprintf(wd,sizeof(wd),"%dm/s",(int)wx.windMs); CSTR("WIND",95,45); CSTR(wd,95,57);
+  #undef CSTR
+}
+
+// Notification Screen
+void drawNotificationScreen() {
+  unreadNotifs = 0; // Clear unread count on view
+
+  display.setFont(u8g2_font_6x10_tf);
+  display.drawStr(0, 10, "NOTIFICATIONS");
+  display.drawHLine(0, 12, 128);
+
+  if (notifCount == 0) {
+    display.setFont(u8g2_font_5x8_tf);
+    centerStr("No notifications yet", 36);
+    return;
+  }
+
+  // Draw current selected notification
+  int idx = (notifHead - 1 - selectedNotifIdx + MAX_NOTIFS) % MAX_NOTIFS;
+  Notification&amp; n = notifBuf[idx];
+
+  display.setFont(u8g2_font_6x10_tf);
+  display.drawStr(0, 24, n.app);
+  display.setFont(u8g2_font_5x8_tf);
+  display.drawStr(0, 36, n.title);
+
+  display.drawHLine(0, 40, 128);
+
+  display.drawStr(0, 52, n.body);
+
+  // Counter at bottom right
+  char countStr[10];
+  snprintf(countStr, sizeof(countStr), "%d/%d", selectedNotifIdx + 1, notifCount);
+  display.drawStr(100, 62, countStr);
+}
+
+// Popup Overlay (bottom banner)
+void drawPopupOverlay() {
+  if (!popupActive) return;
+  if (millis() - popupStartMs &gt; 4000) {
+    popupActive = false;
+    return;
+  }
+
+  display.setDrawColor(0);
+  display.drawBox(0, 42, 128, 22);
+  display.setDrawColor(1);
+  display.drawFrame(0, 42, 128, 22);
+
+  display.setFont(u8g2_font_4x6_tf);
+  display.drawStr(4, 50, popupTitle);
+  display.drawStr(4, 60, popupBody);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑫ WEATHER FETCH
+// ═══════════════════════════════════════════════════════════════
+void fetchWeather() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  WiFiClient client;
+  HTTPClient http;
+
+  String url = "http://api.openweathermap.org/data/2.5/weather?q=";
+  url += config.owm_city;
+  url += "&amp;appid=";
+  url += config.owm_key;
+  url += "&amp;units=";
+  url += config.owm_units;
+
+  http.begin(client, url);
+  int httpCode = http.GET();
+  if (httpCode == 200) {
+    StaticJsonDocument&lt;512&gt; doc;
+    if (!deserializeJson(doc, http.getStream())) {
+      strncpy(wx.city, doc["name"] | config.owm_city, 23);
+      strncpy(wx.desc, doc["weather"][0]["description"] | "", 31);
+      strncpy(wx.icon, doc["weather"][0]["icon"] | "01d", 3);
+      wx.icon[3] = '\0';
+      for (uint8_t i = 0; wx.icon[i]; i++) {
+        if (wx.icon[i] == 'd' || wx.icon[i] == 'n') { wx.icon[i] = '\0'; break; }
+      }
+      wx.tempC  = (int)round((float)doc["main"]["temp"]);
+      wx.feelsC = (int)round((float)doc["main"]["feels_like"]);
+      wx.humid  = doc["main"]["humidity"];
+      wx.windMs = doc["wind"]["speed"];
+      wx.valid  = true;
+    }
+  }
+  http.end();
+  wxLastFetch = millis();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑬ BUTTON HANDLING
+// ═══════════════════════════════════════════════════════════════
+void handleButtons() {
+  bool btn1 = digitalRead(BTN1);
+  bool btn2 = digitalRead(BTN2);
+
+  // BTN1: Mood Cycle or Notification Scroll
+  if (lastBtn1 == HIGH &amp;&amp; btn1 == LOW) {
+    Serial.println(F("&gt;&gt;&gt; BTN1 Pressed!"));
+    if (currentMode == MODE_NOTIFY &amp;&amp; notifCount &gt; 0) {
+      selectedNotifIdx = (selectedNotifIdx + 1) % notifCount;
+      buzzScreenChange();
+    } else {
+      currentMood = (currentMood + 1) % MOOD_COUNT;
+      buzzEmotion(currentMood);
+    }
+    delay(150);
+  }
+
+  // BTN2 Press Start
+  if (lastBtn2 == HIGH &amp;&amp; btn2 == LOW) {
+    btn2PressStart = millis();
+  }
+
+  // BTN2 Release
+  if (lastBtn2 == LOW &amp;&amp; btn2 == HIGH) {
+    unsigned long pressDuration = millis() - btn2PressStart;
+    Serial.print(F("&gt;&gt;&gt; BTN2 Released after "));
+    Serial.print(pressDuration);
+    Serial.println(F(" ms"));
+
+    if (pressDuration &lt; CYCLE_HOLD_MS) { // Short Press: Cycle Screens
+      currentMode = (ScreenMode)((currentMode + 1) % MODE_COUNT);
+      Serial.print(F("&gt;&gt;&gt; Switched Screen to: "));
+      Serial.println(currentMode);
+      buzzScreenChange();
+    } else { // Long Press (&gt;2s): Toggle Silent Mode
+      config.silent = !config.silent;
+      saveConfig();
+      buzzNotification();
+    }
+    delay(150);
+  }
+
+  lastBtn1 = btn1;
+  lastBtn2 = btn2;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑭ LED INDICATORS LOGIC
+// ═══════════════════════════════════════════════════════════════
+void updateLEDs() {
+  // 🔴 Red LED (Status): Solid ON if Silent Mode active
+  digitalWrite(STATUS_LED, config.silent ? HIGH : LOW);
+
+  // 🟡 Yellow LED (Notify): ON if unread notifications exist
+  digitalWrite(NOTIFY_LED, unreadNotifs &gt; 0 ? HIGH : LOW);
+
+  // 🟢 Green LED (WiFi/MQTT):
+  // Solid ON = WiFi &amp; MQTT connected
+  // Blink slow = WiFi connected, MQTT connecting
+  // OFF = No WiFi
+  if (WiFi.status() == WL_CONNECTED) {
+    if (mqttClient.connected()) {
+      digitalWrite(EMOTION_LED, HIGH);
+    } else {
+      if (millis() - previousBlink &gt; 500) {
+        previousBlink = millis();
+        greenLedState = !greenLedState;
+        digitalWrite(EMOTION_LED, greenLedState ? HIGH : LOW);
+      }
+    }
+  } else {
+    digitalWrite(EMOTION_LED, LOW);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑮ SETUP
+// ═══════════════════════════════════════════════════════════════
+void setup() {
+  Serial.begin(115200);
+  delay(300);
+
+  pinMode(BTN1, INPUT_PULLUP);
+  pinMode(BTN2, INPUT_PULLUP);
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(STATUS_LED, OUTPUT);
+  pinMode(NOTIFY_LED, OUTPUT);
+  pinMode(EMOTION_LED, OUTPUT);
+
+  randomSeed(analogRead(0));
+
+  Wire.begin(SDA_PIN, SCL_PIN);
+  Wire.setClock(400000);
+
+  display.begin();
+  display.setContrast(BRIGHTNESS);
+
+  leftEye.init(3, 3, 56, 46);
+  rightEye.init(69, 3, 56, 46);
+
+  loadConfig();
+
+  // Config mode check
+  if (digitalRead(BTN2) == LOW) {
+    delay(500); // debounce
+    if (digitalRead(BTN2) == LOW) {
+      startConfigPortal();
+      return;
+    }
+  }
+
+  // Normal boot - WiFi connection
+  WiFiManager wm;
+  if (!wm.autoConnect("DeskBuddy_Setup")) {
+    Serial.println(F("WiFi Failed!"));
+    ESP.restart();
+  }
+
+  Serial.println(F("WiFi Connected!"));
+  Serial.print(F("IP: "));
+  Serial.println(WiFi.localIP());
+
+  configTime(19800, 0, NTP_SRV);
+
+  espClient.setInsecure();
+  espClient.setTimeout(MQTT_CONNECT_TIMEOUT);
+
+  mqttClient.setServer(config.mqtt_broker, config.mqtt_port);
+  mqttClient.setCallback(mqttCallback);
+
+  // HTTP notification server (coexists with MQTT notifications)
+  if (config.http_enabled) {
+    server = new ESP8266WebServer(config.http_port);
+    server-&gt;on(config.http_endpoint, HTTP_GET, handleNotify);
+    server-&gt;begin();
+    Serial.print(F("HTTP notify endpoint: http://"));
+    Serial.print(WiFi.localIP());
+    Serial.print(F(":"));
+    Serial.print(config.http_port);
+    Serial.println(config.http_endpoint);
+  }
+
+  fetchWeather();
+  buzzIntro();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ⑯ MAIN LOOP
+// ═══════════════════════════════════════════════════════════════
+void loop() {
+  if (isConfigPortalMode) {
+    if (server) server-&gt;handleClient();
+    return;
+  }
+
+  if (server) server-&gt;handleClient();
+
+  handleButtons();
+  updateLEDs();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    if (!mqttClient.connected()) {
+      mqttReconnect();
+    } else {
+      mqttClient.loop();
+    }
+
+    if (millis() - wxLastFetch &gt; WEATHER_TTL) {
+      fetchWeather();
+    }
+  }
+
+  display.clearBuffer();
+  display.setDrawColor(1);
+
+  switch (currentMode) {
+    case MODE_CLOCK:   drawClock(); break;
+    case MODE_WEATHER: drawWeather(); break;
+    case MODE_MOCHI:   drawMochi(); break;
+    case MODE_NOTIFY:  drawNotificationScreen(); break;
+    default: break;
+  }
+
+  drawPopupOverlay();
+  display.sendBuffer();
+
+  delay(FRAME_MS);
+}</code></pre></div>
+</div></div>
+    <div class="panel" id="desk-circuit" hidden><div class="cdwrap"><svg class="cd" viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg" role="img">
+<rect x="350" y="150" width="180" height="170" fill="#232830" stroke="#6f8b99" stroke-width="1.3" rx="3"/>
+<text x="440" y="218" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">WEMOS</text>
+<text x="440" y="236" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">D1 MINI</text>
+<text x="440" y="258" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">ESP8266, 3.3V</text>
+<rect x="30" y="40" width="160" height="70" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="70" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">SH1106 OLED</text>
+<text x="110" y="88" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">128x64 I2C 400kHz</text>
+<path d="M190 62 H280 V176 H350" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="286" y="58" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SDA -&gt; D2 / GPIO4</text>
+<path d="M190 86 H256 V198 H350" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="262" y="82" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">SCL -&gt; D1 / GPIO5</text>
+<rect x="30" y="170" width="160" height="60" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="196" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">BTN1</text>
+<text x="110" y="214" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">mood / scroll</text>
+<path d="M190 200 H270 V228 H350" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="276" y="196" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">D5 / GPIO14</text>
+<rect x="30" y="256" width="160" height="60" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="110" y="282" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">BTN2</text>
+<text x="110" y="300" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">screen / silent / portal</text>
+<path d="M190 286 H350" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="270" y="280" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">D7 / GPIO13</text>
+<text x="30" y="344" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">both INPUT_PULLUP, other side to GND -- active LOW</text>
+<rect x="700" y="60" width="170" height="130" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="785" y="92" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">STATUS LEDS</text>
+<text x="785" y="116" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">RED   D6 / GPIO12</text>
+<text x="785" y="136" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">YELLOW D3 / GPIO0 *</text>
+<text x="785" y="156" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GREEN  D4 / GPIO2 *</text>
+<text x="785" y="176" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">each via 470R to GND</text>
+<path d="M530 180 H620 V110 H700" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<path d="M530 200 H640 V130 H700" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<path d="M530 220 H660 V150 H700" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/>
+<rect x="700" y="240" width="170" height="70" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="785" y="270" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">PIEZO BUZZER</text>
+<text x="785" y="288" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">passive, D8 / GPIO15 *</text>
+<path d="M530 262 H700" stroke="#8fc2d8" stroke-width="1.3" fill="none" class="tr"/><text x="612" y="256" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">tone()</text>
+<rect x="700" y="346" width="170" height="66" fill="#1b1f24" stroke="#4a6574" stroke-width="1.2" rx="3"/>
+<text x="785" y="374" fill="#cfcac1" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">100uF + 0.1uF</text>
+<text x="785" y="392" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">across 3V3 / GND</text>
+<path d="M530 300 H620 V380 H700" stroke="#cfcac1" stroke-width="1.6" fill="none" class="tr"/>
+<text x="350" y="400" fill="#8fc2d8" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="0.08em">* GPIO0 / 2 / 15 ARE BOOT-STRAPPING PINS</text>
+<text x="350" y="418" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">0 and 2 must be HIGH at power-on, 15 must be LOW. No added pull resistors here.</text>
+<text x="0" y="440" fill="#7d8b95" font-family="JetBrains Mono,monospace" font-size="8.5">Notifications arrive over HTTP or MQTT; config persists in LittleFS across reboots.</text>
+</svg></div><p class="cnote">Two decoupling capacitors — 100µF bulk and 0.1µF ceramic — sit as close to the 3V3 pin as they physically fit. They were added after the board reset under combined WiFi, display, LED and buzzer load. That is not theory; that is a bug that was found and fixed.</p></div>
+    <div class="panel" id="desk-parts" hidden><div class="plates"><span class="plate">WEMOS D1 MINI</span><span class="plate">SH1106 128×64</span><span class="plate">LED ×3 + 470Ω</span><span class="plate">BUTTON ×2</span><span class="plate">PASSIVE PIEZO</span><span class="plate">100µF + 0.1µF</span></div></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <h3>How to read this</h3>
+  <p>Each project has four screens. <b style="color:#CFCAC1">README</b> is why it exists and what went wrong.
+     <b style="color:#CFCAC1">CODE</b> is the complete sketch, scrollable in place — copy it to the clipboard, or open the repo above for the file itself.
+     <b style="color:#CFCAC1">CIRCUIT</b> is a diagram drawn from the pin assignments in that sketch.
+     <b style="color:#CFCAC1">PARTS</b> is what it takes to build one.</p>
+  <p style="margin-top:26px">Source for all six lives at
+    <a href="https://github.com/MONKEYDPARI019" target="_blank" rel="noopener">github.com/MONKEYDPARI019</a>.
+    Still building — the next one involves a battery that reports its own health.</p>
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.oledrow').forEach(function(row){
+  row.querySelectorAll('.oled').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (btn.getAttribute('aria-pressed') === 'true') return;
+      row.querySelectorAll('.oled').forEach(function(b){
+        b.setAttribute('aria-pressed','false');
+        b.querySelector('.state').textContent = 'OFF';
+        var p = document.getElementById(b.dataset.target);
+        if (p) p.hidden = true;
+      });
+      btn.setAttribute('aria-pressed','true');
+      btn.querySelector('.state').textContent = 'ON';
+      var panel = document.getElementById(btn.dataset.target);
+      if (panel){ panel.hidden = false; if (window.__recheckPre) setTimeout(window.__recheckPre, 40); }
+    });
+  });
+});
+
+/* copy code */
+document.querySelectorAll('.cbtn.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var el = document.getElementById(btn.dataset.copy);
+    if (!el) return;
+    var txt = el.textContent, ok = false;
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position='fixed'; ta.style.top='-2000px';
+      document.body.appendChild(ta); ta.select();
+      ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch(e){ ok = false; }
+    var done = function(good){
+      btn.classList.add('done');
+      btn.innerHTML = good ? '<span class="ci">&#10003;</span> COPIED'
+                           : '<span class="ci">&#9998;</span> SELECTED \u2014 CTRL+C';
+      if (!good){
+        var r = document.createRange(); r.selectNodeContents(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      }
+      setTimeout(function(){
+        btn.classList.remove('done');
+        btn.innerHTML = '<span class="ci">&#10697;</span> COPY CODE';
+      }, 2200);
+    };
+    if (!ok && navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ done(true); }, function(){ done(false); });
+    } else { done(ok); }
+  });
+});
+
+/* ---- code blocks: drop the bottom fade once you reach the end ---- */
+(function(){
+  var checks = [];
+  document.querySelectorAll('.prewrap').forEach(function(w){
+    var pre = w.querySelector('pre');
+    if (!pre) return;
+    function check(){
+      if (!pre.clientHeight) return;                 /* panel hidden — nothing to measure */
+      var atEnd = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 4;
+      var noScroll = pre.scrollHeight <= pre.clientHeight + 4;
+      w.classList.toggle('at-end', atEnd || noScroll);
+    }
+    pre.addEventListener('scroll', check, {passive:true});
+    checks.push(check);
+  });
+  window.__recheckPre = function(){ checks.forEach(function(f){ f(); }); };
+  setTimeout(window.__recheckPre, 80);
+  window.addEventListener('resize', window.__recheckPre, {passive:true});
+})();
+
+/* reveal + odometer */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+}, {threshold: 0.15});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+var no = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if (!e.isIntersecting) return;
+    no.unobserve(e.target);
+    var el = e.target, target = el.dataset.to, num = parseFloat(target);
+    if (isNaN(num)) return;
+    var dec = (target.split('.')[1] || '').length, t0 = null;
+    function step(ts){
+      if (!t0) t0 = ts;
+      var k = Math.min((ts - t0)/900, 1); k = 1 - Math.pow(1-k, 3);
+      el.textContent = (num*k).toFixed(dec);
+      if (k < 1) requestAnimationFrame(step); else el.textContent = target;
+    }
+    el.textContent = dec ? '0.0' : '0';
+    requestAnimationFrame(step);
+  });
+}, {threshold: 1});
+document.querySelectorAll('.stat b[data-to]').forEach(function(el){ no.observe(el); });
+
+/* cursor-following eyes */
+(function(){
+  var svg = document.querySelector('.buddy');
+  if (!svg) return;
+  var pups = svg.querySelectorAll('.pup');
+  var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  function aim(clientX, clientY){
+    var r = svg.getBoundingClientRect();
+    if (!r.width) return;
+    var ex = r.left + r.width/2, ey = r.top + r.height*0.5;
+    var dx = clientX - ex, dy = clientY - ey;
+    var d = Math.sqrt(dx*dx + dy*dy) || 1;
+    var max = 9;
+    var k = Math.min(d/260, 1) * max;
+    tx = dx/d*k; ty = dy/d*k;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    cx += (tx-cx)*0.16; cy += (ty-cy)*0.16;
+    pups.forEach(function(p){ p.setAttribute('transform','translate('+cx.toFixed(2)+','+cy.toFixed(2)+')'); });
+    if (Math.abs(tx-cx) > 0.05 || Math.abs(ty-cy) > 0.05) raf = requestAnimationFrame(tick);
+    else raf = null;
+  }
+  window.addEventListener('mousemove', function(e){ aim(e.clientX, e.clientY); }, {passive:true});
+  window.addEventListener('touchmove', function(e){
+    if (e.touches && e.touches[0]) aim(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+  /* idle drift so it feels alive before the cursor arrives */
+  var t = 0;
+  setInterval(function(){
+    if (raf) return;
+    t += 1;
+    aim(window.innerWidth/2 + Math.sin(t/3)*300, window.innerHeight/3 + Math.cos(t/4)*160);
+  }, 2600);
+})();
+</script>
+
+</body>
+</html>
