@@ -45,7 +45,7 @@
   function tone(f1, f2, dur, delay, type) {
     if (!soundOn || S.silent || !ac) return;
     var t = ac.currentTime + (delay || 0), o = ac.createOscillator(), g = ac.createGain();
-    var v = 0.05 * (S.volume / 100);
+    var v = 0.16 * (S.volume / 100);
     o.type = type || 'square';
     o.frequency.setValueAtTime(f1, t);
     if (f2) o.frequency.linearRampToValueAtTime(f2, t + dur);
@@ -98,7 +98,7 @@
     };
     if (S.mode === 'sleep') return M.face('sleeping');
     if (S.mode === 'find') return M.screen('find');
-    if (S.mode === 'listen') return M.screen('listen');
+    if (S.mode === 'listen') return M.screen('listen', { levels: S.levels });
     if (S.mode === 'think') return M.screen('think');
     if (S.mode === 'say') return M.screen('say', o);
     if (S.popup) { o.note = S.popup; return M.screen('notify', o); }
@@ -175,7 +175,8 @@
       return '<section class="pcard2 voice"><div class="pc-h"><h4>VOICE</h4><span>' + st + '</span></div>' +
         '<div class="wave' + (S.mode === 'listen' ? ' live' : '') + '" aria-hidden="true">' + new Array(16).join('<i></i>') + '<i></i></div>' +
         '<button type="button" class="ptt" data-hold="ptt" aria-pressed="' + (S.mode === 'listen') + '">HOLD TO TALK</button>' +
-        '<p class="ph-hint">Same as holding BTN3. Speech-to-text isn\'t wired in yet, so Mochi gives a placeholder reply — like the real build.</p></section>' +
+        '<p class="heard">' + (S.heard ? '"' + esc(S.heard) + '"' : '') + '</p>' +
+        '<p class="ph-hint">' + (S.micNote ? esc(S.micNote) : 'Same as holding BTN3. Your browser asks for the mic once; try “what time is it”, “be happy” or “tell me a joke”.') + '</p></section>' +
         '<section class="pcard2"><div class="pc-h"><h4>MAKE MOCHI SAY</h4></div>' +
         '<label class="vh" for="sayIn">Text for Mochi to say</label><input id="sayIn" class="pin-txt" maxlength="60" placeholder="Hello from the app" value="' + esc(S.sayDraft) + '" data-in="say">' +
         '<button type="button" class="pbtn pacc wide" data-act="say">SAY</button></section>';
@@ -238,11 +239,88 @@
     state({ unread: S.notes.length });
   }
 
+  /* ---------------- real voice: mic level, speech-to-text, spoken replies ---------------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var mic = { stream: null, an: null, buf: null, raf: 0, rec: null, text: '', heard: false, live: false };
+
+  function micStart() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { S.micNote = 'No microphone access in this browser.'; return; }
+    var ctx = audio(); if (!ctx) return;
+    var go = function (stream) {
+      if (S.mode !== 'listen') { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+      mic.stream = stream; mic.live = true;
+      var src = ctx.createMediaStreamSource(stream);
+      mic.an = ctx.createAnalyser(); mic.an.fftSize = 512; mic.buf = new Uint8Array(mic.an.frequencyBinCount);
+      src.connect(mic.an);
+      var last = 0;
+      (function tick(t) {
+        if (!mic.an) return;
+        mic.raf = requestAnimationFrame(tick);
+        if (t - last < 66) return; last = t;
+        mic.an.getByteFrequencyData(mic.buf);
+        var lv = [], step = Math.floor(mic.buf.length / 3 / 8);
+        for (var i = 0; i < 8; i++) { var sum = 0; for (var k = 0; k < step; k++) sum += mic.buf[i * step + k]; lv.push(Math.min(1, sum / step / 150)); }
+        S.levels = lv;
+        var w = phBody.querySelector('.wave');
+        if (w) Array.prototype.forEach.call(w.children, function (b, j) { b.style.height = (6 + lv[j % 8] * 38) + 'px'; });
+        renderDevice();
+      })(0);
+    };
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(go, function () {
+      S.micNote = 'Microphone blocked — allow it in the address bar to talk to Mochi.'; logEl.textContent = 'MIC  permission denied — using a placeholder reply';
+    });
+    if (SR) {
+      try {
+        var r = new SR(); mic.rec = r; mic.text = ''; mic.heard = false;
+        r.lang = navigator.language || 'en-US'; r.interimResults = true; r.continuous = true;
+        r.onresult = function (e) {
+          var t = ''; for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+          mic.text = t.trim(); mic.heard = true;
+          var el = phBody.querySelector('.heard'); if (el) el.textContent = '"' + mic.text + '"';
+          logEl.textContent = 'STT  ' + mic.text;
+        };
+        r.onerror = function (e) { if (e.error !== 'aborted' && e.error !== 'no-speech') S.micNote = 'Speech recognition unavailable here (' + e.error + ').'; };
+        r.start();
+      } catch (er) { mic.rec = null; }
+    }
+  }
+  function micStop(cb) {
+    cancelAnimationFrame(mic.raf); mic.an = null; S.levels = null;
+    if (mic.stream) { mic.stream.getTracks().forEach(function (t) { t.stop(); }); mic.stream = null; }
+    var wasLive = mic.live; mic.live = false;
+    if (mic.rec) {
+      var r = mic.rec, done = false; mic.rec = null;
+      var fin = function () { if (done) return; done = true; cb(mic.text, wasLive); };
+      r.onend = fin; try { r.stop(); } catch (e) { fin(); }
+      setTimeout(fin, 1500);
+    } else cb('', wasLive);
+  }
+
+  function pad0(n) { return (n < 10 ? '0' : '') + n; }
+  function brain(t) {
+    var x = t.toLowerCase(), d = new Date(), h = d.getHours();
+    var moods = { happy: 'happy', sad: 'sad', angry: 'angry', love: 'love', sleepy: 'sleepy', dizzy: 'dizzy', cat: 'cat', star: 'star', wink: 'wink', smug: 'smug', nervous: 'nervous', cute: 'cute', surprised: 'surprised' };
+    if (!x) return { say: "Hmm, I didn't catch that. Try again?" };
+    for (var m in moods) if (x.indexOf(m) > -1) return { say: 'Okay! Feeling ' + m + ' now.', mood: moods[m] };
+    if (/\btime\b/.test(x)) return { say: "It's " + ((h % 12) || 12) + ':' + pad0(d.getMinutes()) + (h < 12 ? ' AM.' : ' PM.') };
+    if (/weather|temperature|hot|cold|rain/.test(x)) return { say: "It's 28 degrees and partly cloudy in " + S.city + '. Demo weather, but I tried.', screen: 'weather' };
+    if (/who (made|built|created)|your (maker|creator)|parinith/.test(x)) return { say: 'Parinith built me. An ESP32, a tiny OLED, and a lot of debugging.' };
+    if (/your name|who are you|what are you/.test(x)) return { say: "I'm Mochi, Parinith's desk buddy." };
+    if (/joke|funny/.test(x)) return { say: 'Why did the capacitor quit? It was tired of being charged for everything.' };
+    if (/notif|message|inbox/.test(x)) return { say: 'Here is a test notification.', act: 'test' };
+    if (/focus|pomodoro|timer|study/.test(x)) return { say: 'Focus mode. Twenty five minutes, go!', pomo: true };
+    if (/sleep|good ?night|bye/.test(x)) return { say: 'Good night!', sleep: true };
+    if (/hello|hi\b|hey|namaste/.test(x)) return { say: 'Hi! Nice to meet you. Hold the button and ask me the time.' };
+    if (/how are you/.test(x)) return { say: 'Running at thirty frames per second. Feeling great.' };
+    return { say: 'You said: ' + t + '. My real assistant plugs in here soon.' };
+  }
+
   function startListen(src) {
-    S.mode = 'listen'; SFX.listen();
+    S.mode = 'listen'; S.levels = null; S.heard = ''; SFX.listen();
     if (src === 'app') send('a2d', { type: 'ptt', on: true });
     later('ptts', 250, function () { send('d2a', { type: 'ptt_start', rate: 16000, format: 's16le' }); });
     render();
+    micStart();
   }
   function endListen(src) {
     if (S.mode !== 'listen') return;
@@ -250,18 +328,62 @@
     if (src === 'app') send('a2d', { type: 'ptt', on: false });
     S.mode = 'think'; render();
     later('ptte', 200, function () { send('d2a', { type: 'ptt_end' }); });
-    later('voice', 1500, function () { speak("I heard you! The real assistant plugs in here soon."); });
+    var t0 = Date.now();
+    micStop(function (text, wasLive) {
+      S.heard = text;
+      var r = (wasLive || text) ? brain(text) : { say: 'I heard you! Allow the microphone and I can actually listen.' };
+      later('voice', Math.max(300, 900 - (Date.now() - t0)), function () {
+        if (r.mood) { S.mood = r.mood; send('a2d', { type: 'face', name: r.mood }); }
+        if (r.screen) S.screen = r.screen;
+        if (r.pomo) { S.screen = 'pomo'; S.pomoRun = true; }
+        speak(r.say, function () {
+          if (r.act) ACT[r.act]();
+          if (r.sleep) { S.mode = 'sleep'; }
+          if (r.mood) S.screen = 'mochi';
+          render();
+        });
+      });
+    });
   }
-  function speak(text) {
+
+  var ttsVoice = null;
+  function pickVoice() {
+    if (!window.speechSynthesis) return;
+    var vs = speechSynthesis.getVoices(), en = vs.filter(function (v) { return /^en/i.test(v.lang); });
+    ttsVoice = en.filter(function (v) { return /female|zira|samantha|google uk english female|aria|jenny|heera/i.test(v.name); })[0] || en[0] || vs[0] || null;
+  }
+  if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+
+  function speak(text, after) {
     S.mode = 'say'; S.sayText = text; S.react = null;
     send('a2d', { type: 'say_start', rate: 16000 });
     render();
-    var n = 0, dur = 2600 + text.length * 95;
+    var n = 0, ended = false;
     clearInterval(timers.blips);
-    timers.blips = setInterval(function () { S.speakFrame = (++n) % 2; if (n % 2) SFX.blip(); renderDevice(); }, 220);
-    later('say', dur, function () {
-      clearInterval(timers.blips); S.mode = null; S.sayText = ''; send('a2d', { type: 'say_end' }); render();
-    });
+    var useTts = soundOn && !S.silent && S.volume > 0 && window.speechSynthesis && window.SpeechSynthesisUtterance;
+    timers.blips = setInterval(function () { S.speakFrame = (++n) % 2; if (!useTts && n % 2) SFX.blip(); renderDevice(); }, 200);
+    function end() {
+      if (ended) return; ended = true;
+      clearInterval(timers.blips); clearTimeout(timers.say);
+      if (S.mode === 'say') S.mode = null;
+      S.sayText = ''; send('a2d', { type: 'say_end' }); render();
+      if (after) after();
+    }
+    if (useTts) {
+      try {
+        speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(text);
+        if (ttsVoice) u.voice = ttsVoice;
+        u.pitch = 1.6; u.rate = 1.05; u.volume = S.volume / 100;
+        var t0 = Date.now();
+        u.onend = function () { if (Date.now() - t0 > 600) end(); };
+        u.onerror = function () { useTts = false; };
+        speechSynthesis.speak(u);
+        later('say', 2600 + text.length * 95, function () { if (!useTts || !speechSynthesis.speaking) end(); else later('say', 6000, end); });
+        return;
+      } catch (e) {}
+    }
+    later('say', 2600 + text.length * 95, end);
   }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -452,6 +574,7 @@
   });
   $('simReset').addEventListener('click', function () {
     for (var k in timers) { clearTimeout(timers[k]); clearInterval(timers[k]); }
+    try { speechSynthesis.cancel(); } catch (e) {}
     S = initial(); holding = null; idleT = 0; lastOled = '';
     logEl.textContent = 'RESET · TAP ANYTHING'; render();
   });

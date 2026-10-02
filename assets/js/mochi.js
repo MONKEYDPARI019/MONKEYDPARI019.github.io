@@ -96,10 +96,15 @@
       return '<g transform="translate(32 0) scale(.5)">' + face(o.speakFrame ? 'happy' : 'default') + '</g>' +
         '<svg x="0" y="38" width="128" height="24" viewBox="0 0 128 24"><text class="' + (msg.length > 18 ? 'marq' : '') + '" x="4" y="17" ' + T + ' font-size="16" style="--mw:' + w + 'px">' + msg + '</text></svg>';
     },
-    listen: function () {
+    listen: function (o) {
+      var lv = (o && o.levels) || null;
+      var bars = [3,6,9,5,8,4,7,3].map(function (h, i) {
+        if (lv) { h = Math.max(1, Math.round(lv[i] * 14)); return '<rect x="' + (40 + i * 6) + '" y="' + (60 - h) + '" width="4" height="' + h + '"/>'; }
+        return '<rect class="eq" style="--d:' + (i * 70) + 'ms" x="' + (40 + i * 6) + '" y="' + (58 - h) + '" width="4" height="' + h + '"/>';
+      }).join('');
       return '<g transform="translate(32 0) scale(.5)">' + face('listen') + '</g>' +
-        '<text x="64" y="48" ' + PX + ' font-size="6" text-anchor="middle">LISTENING...</text>' +
-        '<g fill="#fff">' + [3,6,9,5,8,4,7,3].map(function (h, i) { return '<rect class="eq" style="--d:' + (i * 70) + 'ms" x="' + (40 + i * 6) + '" y="' + (58 - h) + '" width="4" height="' + h + '"/>'; }).join('') + '</g>';
+        '<text x="64" y="42" ' + PX + ' font-size="6" text-anchor="middle">' + (lv ? 'LISTENING' : 'LISTENING...') + '</text>' +
+        '<g fill="#fff">' + bars + '</g>';
     },
     think: function () {
       return '<g transform="translate(32 0) scale(.5)">' + face('think') + '</g>' +

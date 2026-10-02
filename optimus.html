@@ -18,7 +18,9 @@
 /* set theme before first paint so there is no flash */
 (function(){var t=null;try{t=localStorage.getItem('db-theme')}catch(e){}
 if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
-document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js');
+/* if any script fails, never leave content hidden */
+window.addEventListener('error',function(){document.documentElement.classList.remove('motion')});})();
 </script>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/sim.css">
@@ -253,7 +255,7 @@ document.documentElement.setAttribute('data-theme',t);document.documentElement.c
         </table>
       </div>
     </div>
-    <p class="sim-foot">A browser simulation of the real firmware and Android app — the WebSocket link here is simulated in JavaScript and weather is demo data. Source: <a href="https://github.com/MONKEYDPARI019/DeskBuddy-v2" target="_blank" rel="noopener">DeskBuddy-v2 on GitHub<span class="arr" aria-hidden="true"> ↗</span></a></p>
+    <p class="sim-foot">A browser simulation of the real firmware and Android app — the WebSocket link here is simulated in JavaScript and weather is demo data. Hold to talk uses your microphone only while the button is held; speech-to-text and Mochi's voice come from your browser (Chrome and Edge send speech to their own recognition service), and nothing is recorded or stored here. Source: <a href="https://github.com/MONKEYDPARI019/DeskBuddy-v2" target="_blank" rel="noopener">DeskBuddy-v2 on GitHub<span class="arr" aria-hidden="true"> ↗</span></a></p>
   </div>
 </section>
 
