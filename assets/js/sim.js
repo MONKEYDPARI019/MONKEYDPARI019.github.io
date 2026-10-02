@@ -174,12 +174,13 @@
       var st = S.mode === 'listen' ? 'LISTENING...' : S.mode === 'think' ? 'THINKING' : S.mode === 'say' ? 'SPEAKING' : 'MIC READY';
       return '<section class="pcard2 voice"><div class="pc-h"><h4>VOICE</h4><span>' + st + '</span></div>' +
         '<div class="wave' + (S.mode === 'listen' ? ' live' : '') + '" aria-hidden="true">' + new Array(16).join('<i></i>') + '<i></i></div>' +
-        '<button type="button" class="ptt" data-hold="ptt" aria-pressed="' + (S.mode === 'listen') + '">HOLD TO TALK</button>' +
-        '<p class="heard">' + (S.heard ? '"' + esc(S.heard) + '"' : '') + '</p>' +
-        '<p class="ph-hint">' + (S.micNote ? esc(S.micNote) : 'Same as holding BTN3. Your browser asks for the mic once; try “what time is it”, “be happy” or “tell me a joke”.') + '</p></section>' +
-        '<section class="pcard2"><div class="pc-h"><h4>MAKE MOCHI SAY</h4></div>' +
-        '<label class="vh" for="sayIn">Text for Mochi to say</label><input id="sayIn" class="pin-txt" maxlength="60" placeholder="Hello from the app" value="' + esc(S.sayDraft) + '" data-in="say">' +
-        '<button type="button" class="pbtn pacc wide" data-act="say">SAY</button></section>';
+        '<button type="button" class="ptt" data-hold="ptt" aria-pressed="' + (S.mode === 'listen') + '">' + (S.tapMode && S.mode === 'listen' ? 'LISTENING · TAP TO STOP' : 'HOLD OR TAP TO TALK') + '</button>' +
+        '<p class="heard">' + (S.heard ? 'YOU: "' + esc(S.heard) + '"' : '') + (S.lastReply ? '<br>MOCHI: ' + esc(S.lastReply) : '') + '</p>' +
+        '<p class="ph-hint">' + (S.micNote ? esc(S.micNote) : 'Hold while you talk, or tap once and just speak. Try “what time is it”, “be happy” or “tell me a joke”.') + '</p></section>' +
+        '<section class="pcard2"><div class="pc-h"><h4>TYPE TO MOCHI</h4></div>' +
+        '<label class="vh" for="sayIn">Text for Mochi to say</label><input id="sayIn" class="pin-txt" maxlength="60" placeholder="what time is it?" value="' + esc(S.sayDraft) + '" data-in="say">' +
+        '<div class="row2"><button type="button" class="pbtn pacc" data-act="ask">ASK MOCHI</button><button type="button" class="pbtn" data-act="say">SAY IT</button></div>' +
+        '<p class="ph-hint">ASK = Mochi answers it. SAY IT = Mochi reads it out.</p></section>';
     },
     setup: function () {
       var th = ['light', 'dark', 'auto'].map(function (t) { return '<button type="button" data-act="ptheme" data-v="' + t + '" aria-pressed="' + (S.ptheme === t) + '">' + t.toUpperCase() + '</button>'; }).join('');
@@ -244,7 +245,7 @@
   var mic = { stream: null, an: null, buf: null, raf: 0, rec: null, text: '', heard: false, live: false };
 
   function micStart() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { S.micNote = 'No microphone access in this browser.'; return; }
+    if (!SR && (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)) { S.micNote = 'No microphone access in this browser.'; return; }
     var ctx = audio(); if (!ctx) return;
     var go = function (stream) {
       if (S.mode !== 'listen') { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
@@ -266,20 +267,37 @@
         renderDevice();
       })(0);
     };
-    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(go, function () {
+    if (!SR) navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(go, function () {
       S.micNote = 'Microphone blocked — allow it in the address bar to talk to Mochi.'; logEl.textContent = 'MIC  permission denied — using a placeholder reply';
     });
     if (SR) {
       try {
-        var r = new SR(); mic.rec = r; mic.text = ''; mic.heard = false;
-        r.lang = navigator.language || 'en-US'; r.interimResults = true; r.continuous = true;
+        var r = new SR(); mic.rec = r; mic.text = ''; mic.heard = false; S.sttErr = null;
+        r.lang = S.sttLang || 'en-US'; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+        r.onaudiostart = function () { mic.live = true; logEl.textContent = 'MIC  listening… speak now'; };
+        r.onspeechstart = function () { logEl.textContent = 'MIC  hearing you…'; };
+        r.onend = function () {
+          // some browsers stop by themselves after a pause: restart while the button is still active
+          if (mic.rec === r && S.mode === 'listen' && !mic.text) { try { r.start(); } catch (e) {} }
+          else if (mic.rec === r && S.mode === 'listen' && S.tapMode) { S.tapMode = false; endListen(S.tapSrc || 'app'); }
+        };
         r.onresult = function (e) {
-          var t = ''; for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+          var t = '', fin = false; for (var i = 0; i < e.results.length; i++) { t += e.results[i][0].transcript; if (e.results[i].isFinal) fin = true; }
           mic.text = t.trim(); mic.heard = true;
+          if (fin && S.tapMode) later('tapend', 500, function () { if (S.tapMode && S.mode === 'listen') { S.tapMode = false; endListen(S.tapSrc || 'app'); } });
           var el = phBody.querySelector('.heard'); if (el) el.textContent = '"' + mic.text + '"';
           logEl.textContent = 'STT  ' + mic.text;
         };
-        r.onerror = function (e) { if (e.error !== 'aborted' && e.error !== 'no-speech') S.micNote = 'Speech recognition unavailable here (' + e.error + ').'; };
+        r.onerror = function (e) {
+          if (e.error === 'aborted' || e.error === 'no-speech') return;
+          S.sttErr = e.error;
+          S.micNote = e.error === 'network' ? 'Word recognition needs internet (and works best on the live https site).'
+            : (e.error === 'not-allowed' || e.error === 'service-not-allowed') ? 'This browser blocked word recognition here — try Chrome or Edge on the live site.'
+            : e.error === 'audio-capture' ? 'No microphone found — check Windows sound settings.'
+            : e.error === 'language-not-supported' ? 'Speech language not supported here.'
+            : 'Word recognition error: ' + e.error + '.';
+          logEl.textContent = 'STT  error: ' + e.error;
+        };
         r.start();
       } catch (er) { mic.rec = null; }
     }
@@ -291,9 +309,10 @@
     if (mic.rec) {
       var r = mic.rec, done = false; mic.rec = null;
       var fin = function () { if (done) return; done = true; cb(mic.text, wasLive); };
-      r.onend = fin; try { r.stop(); } catch (e) { fin(); }
+      r.onend = fin; r.onerror = function (e) { if (e.error !== 'aborted' && e.error !== 'no-speech') { S.sttErr = e.error; logEl.textContent = 'STT  error: ' + e.error; } fin(); };
+      try { r.stop(); } catch (e) { fin(); }
       setTimeout(fin, 1500);
-    } else cb('', wasLive);
+    } else { if (!SR) S.sttErr = 'unsupported'; cb('', wasLive); }
   }
 
   function pad0(n) { return (n < 10 ? '0' : '') + n; }
@@ -324,6 +343,7 @@
   }
   function endListen(src) {
     if (S.mode !== 'listen') return;
+    S.tapMode = false; clearTimeout(timers.tapmax);
     SFX.listenEnd();
     if (src === 'app') send('a2d', { type: 'ptt', on: false });
     S.mode = 'think'; render();
@@ -331,7 +351,12 @@
     var t0 = Date.now();
     micStop(function (text, wasLive) {
       S.heard = text;
-      var r = (wasLive || text) ? brain(text) : { say: 'I heard you! Allow the microphone and I can actually listen.' };
+      var r;
+      if (text) r = brain(text);
+      else if (!wasLive) r = { say: "I didn't hear anything. Check the mic is allowed, or type your question below." };
+      else if (S.sttErr === 'unsupported') r = { say: "I can hear you, but this browser can't turn speech into words. Try Chrome or Edge." };
+      else if (S.sttErr) r = { say: "I can hear you, but I couldn't make out the words here. Try the live site in Chrome or Edge." };
+      else r = brain('');
       later('voice', Math.max(300, 900 - (Date.now() - t0)), function () {
         if (r.mood) { S.mood = r.mood; send('a2d', { type: 'face', name: r.mood }); }
         if (r.screen) S.screen = r.screen;
@@ -355,7 +380,7 @@
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
   function speak(text, after) {
-    S.mode = 'say'; S.sayText = text; S.react = null;
+    S.mode = 'say'; S.sayText = text; S.react = null; S.lastReply = text;
     send('a2d', { type: 'say_start', rate: 16000 });
     render();
     var n = 0, ended = false;
@@ -371,14 +396,15 @@
     }
     if (useTts) {
       try {
-        speechSynthesis.cancel();
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance(text);
+        window.__mochiUtter = u; // keep a reference (Chrome drops unreferenced utterances)
         if (ttsVoice) u.voice = ttsVoice;
         u.pitch = 1.6; u.rate = 1.05; u.volume = S.volume / 100;
         var t0 = Date.now();
         u.onend = function () { if (Date.now() - t0 > 600) end(); };
         u.onerror = function () { useTts = false; };
-        speechSynthesis.speak(u);
+        setTimeout(function () { speechSynthesis.resume(); speechSynthesis.speak(u); }, 60);
         later('say', 2600 + text.length * 95, function () { if (!useTts || !speechSynthesis.speaking) end(); else later('say', 6000, end); });
         return;
       } catch (e) {}
@@ -409,6 +435,16 @@
     say: function () {
       var t = (S.sayDraft || '').trim() || 'Hello from the app';
       speak(t);
+    },
+    ask: function () {
+      var t = (S.sayDraft || '').trim() || 'what time is it';
+      var r = brain(t); S.heard = t; S.mode = 'think'; render();
+      later('ask', 600, function () {
+        if (r.mood) { S.mood = r.mood; send('a2d', { type: 'face', name: r.mood }); }
+        if (r.screen) S.screen = r.screen;
+        if (r.pomo) { S.screen = 'pomo'; S.pomoRun = true; }
+        speak(r.say, function () { if (r.act) ACT[r.act](); if (r.sleep) S.mode = 'sleep'; if (r.mood) S.screen = 'mochi'; render(); });
+      });
     },
     ptheme: function (v) { S.ptheme = v; },
     find: function () {
@@ -441,7 +477,7 @@
     }
   });
   phBody.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && e.target.dataset.in === 'say') { touched(); ACT.say(); render(); }
+    if (e.key === 'Enter' && e.target.dataset.in === 'say') { touched(); ACT.ask(); render(); }
     if (e.key === 'Enter' && e.target.dataset.in === 'city') { touched(); ACT.city(); render(); }
   });
   $('phTabs').addEventListener('click', function (e) {
@@ -450,19 +486,28 @@
   });
 
   /* hold-to-talk in the app */
-  var holding = null;
+  var holding = null, downAt = 0;
   function pttDown(e) {
     var b = e.target.closest('[data-hold="ptt"]'); if (!b || holding) return;
     if (e.type === 'keydown' && e.key !== ' ' && e.key !== 'Enter') return;
     if (e.type === 'keydown' && e.repeat) return;
     e.preventDefault();
-    touched(); holding = 'app'; b.setAttribute('aria-pressed', 'true'); b.classList.add('down');
+    if (S.tapMode && S.mode === 'listen') { S.tapMode = false; clearTimeout(timers.tapmax); endListen('app'); renderPhone(); return; }
+    touched(); holding = 'app'; downAt = Date.now(); b.setAttribute('aria-pressed', 'true'); b.classList.add('down');
     var w = phBody.querySelector('.wave'); if (w) w.classList.add('live');
     startListen('app');
   }
   function pttUp() {
     if (holding !== 'app') return;
-    holding = null; endListen('app'); renderPhone();
+    holding = null;
+    if (Date.now() - downAt < 450 && S.mode === 'listen') {
+      // quick tap: keep listening until you stop talking (or tap again)
+      S.tapMode = true; S.tapSrc = 'app';
+      later('tapmax', 8000, function () { if (S.tapMode && S.mode === 'listen') { S.tapMode = false; endListen('app'); } });
+      renderPhone();
+      return;
+    }
+    endListen('app'); renderPhone();
   }
   phBody.addEventListener('pointerdown', pttDown);
   phBody.addEventListener('keydown', pttDown);
