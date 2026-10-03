@@ -59,7 +59,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="hero-copy">
       <p class="kicker"><span class="blk" aria-hidden="true"></span>BENCH LOG · BENGALURU</p>
       <h1 id="heroTitle" class="hero-title"><span class="ht-line">THINGS I</span><span class="ht-line">BUILT</span><span class="ht-line ht-acc">AND BROKE.</span></h1>
-      <p class="lead">I'm Parinith — an Electronics &amp; Communication undergrad who lives on the embedded side: microcontrollers, sensors, radios, batteries, and anything that can be made to talk to something else over a wire or over the air.</p>
+      <p class="lead">ECE (Electronics &amp; Communication Engineering) student in Bengaluru. I build embedded hardware: microcontrollers, sensors, radios and batteries.</p>
       <div class="hero-cta">
         <a class="btn btn-acc" href="#simulator">TRY DESKBUDDY</a>
         <a class="btn" href="#projects">VIEW PROJECTS</a>
@@ -84,9 +84,13 @@ window.addEventListener('error',function(){document.documentElement.classList.re
       <div class="winbar"><h2 class="wb-title" id="aboutT">ABOUT.TXT</h2><span class="wb-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
       <div class="about-grid">
         <div class="prose">
-          <p><b>Embedded systems and IoT are where I actually live:</b> microcontrollers, sensors, radios, batteries, and anything that can be made to talk to something else over a wire or over the air.</p>
-          <p>Most of my attention goes wherever the hardware is heading next — <b>drones and UAVs</b>, PCB design, hardware prototyping fast enough to find out what is wrong while it still matters. Off the bench: pickleball, cricket, table tennis, and a shelf of diecast models that stopped being a small collection some time ago.</p>
-          <p>Every circuit diagram on this page was drawn from the pin assignments in my own code, and the failures are written down next to the successes — because on this bench they cost about the same and teach rather more.</p>
+          <ul class="bul">
+            <li><b>Embedded systems and IoT (Internet of Things):</b> microcontrollers, sensors, radios, batteries.</li>
+            <li>Currently into <b>drones / UAVs</b> (unmanned aerial vehicles), PCB (printed circuit board) design and fast prototyping.</li>
+            <li>Every circuit here is drawn from the pin assignments in my own code.</li>
+            <li>Failures are listed next to successes. They teach more.</li>
+            <li>Off the bench: pickleball, cricket, table tennis, diecast models.</li>
+          </ul>
           <p class="sig">PARINITH M D · ECE, NEW HORIZON COLLEGE OF ENGINEERING (VTU) · CLASS OF 2027</p>
         </div>
         <div>
@@ -108,18 +112,18 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="sec-head reveal">
       <p class="kicker"><span class="blk" aria-hidden="true"></span>07 · FEATURED · IN PROGRESS</p>
       <h2 class="sec-title" id="dbT">DESKBUDDY.V2</h2>
-      <p class="sec-sub">A desk companion that keeps your phone out of reach without making you miss what matters. An ESP32 with an animated face called Mochi, a native Android app, and one small protocol between them.</p>
+      <p class="sec-sub">A desk companion so you can check the time and notifications without picking up your phone. ESP32 board + animated face (Mochi) + Android app.</p>
     </div>
   </div>
 
   <div class="pin" id="dbPin">
     <div class="wrap pin-grid">
       <ol class="pin-steps" id="pinSteps">
-        <li class="pstep" data-screen="clock"><span class="ps-n">01</span><h3>CLOCK</h3><p>NTP time over WiFi, set up once through a captive portal called <code>DeskBuddy_Setup</code>. Checking the time no longer means unlocking the phone.</p></li>
-        <li class="pstep" data-screen="weather"><span class="ps-n">02</span><h3>WEATHER</h3><p>OpenWeatherMap, refreshed in the background. The API key is set at runtime over the serial CLI, never committed to the source.</p></li>
-        <li class="pstep" data-screen="mochi"><span class="ps-n">03</span><h3>MOCHI</h3><p>15 moods plus states — boot, idle, notify, listening, thinking, speaking, sleep. Faces are built from parameters, so they glide between moods and blink on their own. Pat the touch pad and it purrs.</p></li>
-        <li class="pstep" data-screen="notify"><span class="ps-n">04</span><h3>INBOX</h3><p>A native Android app forwards notifications over a WebSocket, with a per-app filter. v1 relied on an automation app over HTTP — buggy and laggy — which is the reason v2 exists.</p></li>
-        <li class="pstep" data-screen="pomo"><span class="ps-n">05</span><h3>POMO</h3><p>A 25-minute focus timer on BTN3. Three status LEDs: red = silent, yellow = unread, green = network (blinking = WiFi only, solid = app connected).</p></li>
+        <li class="pstep" data-screen="clock"><span class="ps-n">01</span><h3>CLOCK</h3><ul class="bul"><li>Time from the internet (NTP) over WiFi.</li><li>One-time setup through a captive portal (setup web page) called <code>DeskBuddy_Setup</code>.</li></ul></li>
+        <li class="pstep" data-screen="weather"><span class="ps-n">02</span><h3>WEATHER</h3><ul class="bul"><li>OpenWeatherMap data, refreshed in the background.</li><li>API key is set over the serial CLI (command line), never committed to the code.</li></ul></li>
+        <li class="pstep" data-screen="mochi"><span class="ps-n">03</span><h3>MOCHI</h3><ul class="bul"><li>15 moods, plus boot, idle, notify, listening, thinking, speaking and sleep states.</li><li>Faces glide between moods and blink on their own. Pat the touch pad and it purrs.</li></ul></li>
+        <li class="pstep" data-screen="notify"><span class="ps-n">04</span><h3>INBOX</h3><ul class="bul"><li>Android app forwards notifications over a WebSocket (live two-way connection), with a per-app filter.</li><li>v1 used an automation app over HTTP: buggy and laggy. That is why v2 exists.</li></ul></li>
+        <li class="pstep" data-screen="pomo"><span class="ps-n">05</span><h3>POMO</h3><ul class="bul"><li>25-minute focus timer (Pomodoro) on BTN3.</li><li>LEDs: red = silent, yellow = unread, green = network (blink = WiFi only, solid = app connected).</li></ul></li>
       </ol>
       <div class="pin-dev">
         <div class="dev-shell pin-shell" aria-hidden="true">
@@ -160,7 +164,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
             <g class="a-box"><rect x="530" y="200" width="102" height="72"/><text x="581" y="224" class="a-t">OLED</text><text x="581" y="242" class="a-s">SSD1306</text><text x="581" y="260" class="a-s">PAM8403 spk</text></g>
           </svg>
         </div>
-        <p class="cnote">Tasks never call each other. They post events into one queue and only the app task decides what to do — that single rule is what keeps seven tasks across two cores from deadlocking. The ESP32 is the WebSocket <em>server</em> because phones change IP and Android kills background servers, but a phone can always open an outgoing connection.</p>
+        <div class="cnote"><ul class="bul"><li>Tasks never call each other. They post events to one queue, and only the app task decides. This keeps 7 tasks on 2 cores from deadlocking.</li><li>The ESP32 is the WebSocket <em>server</em>: phones change IP and Android kills background servers, but a phone can always dial out.</li></ul></div>
       </div>
 
       <div class="win reveal">
@@ -175,7 +179,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
             <tr><th scope="row">INPUT</th><td data-l="V1">2 buttons</td><td data-l="V2">3 buttons + capacitive touch pad</td></tr>
             <tr><th scope="row">SOUND</th><td data-l="V1">Passive piezo</td><td data-l="V2">DAC → PAM8403 speaker, spoken replies</td></tr>
             <tr><th scope="row">VOICE</th><td data-l="V1">—</td><td data-l="V2">INMP441 push-to-talk (mic on order)</td></tr>
-            <tr><th scope="row">UPDATES</th><td data-l="V1">USB</td><td data-l="V2">USB + OTA over WiFi</td></tr>
+            <tr><th scope="row">UPDATES</th><td data-l="V1">USB</td><td data-l="V2">USB + OTA (over-the-air) via WiFi</td></tr>
           </tbody>
         </table>
         </div>
@@ -183,7 +187,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
           <a class="btn btn-acc" href="https://github.com/MONKEYDPARI019/DeskBuddy-v2" target="_blank" rel="noopener">V2 ON GITHUB<span class="arr" aria-hidden="true"> ↗</span></a>
           <a class="btn" href="#simulator">TRY IT BELOW<span class="arr" aria-hidden="true"> ↓</span></a>
         </div>
-        <p class="cnote">Next: test the microphone end to end, plug speech-to-text into the app's voice loop, then a KiCad carrier PCB with USB-C power and a proper case.</p>
+        <div class="cnote"><b>NEXT</b><ul class="bul"><li>Test the microphone end to end and add speech-to-text to the app.</li><li>KiCad carrier PCB with USB-C power, plus a case.</li></ul></div>
       </div>
     </div>
   </div>
@@ -195,7 +199,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="sec-head reveal">
       <p class="kicker"><span class="blk" aria-hidden="true"></span>INTERACTIVE</p>
       <h2 class="sec-title" id="simT">SIMULATOR.EXE</h2>
-      <p class="sec-sub">Try DeskBuddy v2 in your browser. The phone runs the companion app; the box is the device. Everything you do on one shows up on the other — same controls as the real firmware.</p>
+      <p class="sec-sub">Try DeskBuddy v2 in your browser. Phone = companion app, box = device. Use either one; they stay in sync.</p>
     </div>
     <div class="sim-top reveal">
       <button class="btn btn-sm" type="button" id="simSound" aria-pressed="true">SOUND: ON</button>
@@ -255,7 +259,11 @@ window.addEventListener('error',function(){document.documentElement.classList.re
         </table>
       </div>
     </div>
-    <p class="sim-foot">A browser simulation of the real firmware and Android app — the WebSocket link here is simulated in JavaScript and weather is demo data. Hold to talk uses your microphone only while the button is held; speech-to-text and Mochi's voice come from your browser (Chrome and Edge send speech to their own recognition service), and nothing is recorded or stored here. Source: <a href="https://github.com/MONKEYDPARI019/DeskBuddy-v2" target="_blank" rel="noopener">DeskBuddy-v2 on GitHub<span class="arr" aria-hidden="true"> ↗</span></a></p>
+    <ul class="sim-foot bul">
+      <li>Simulation only: the WebSocket link runs in JavaScript and the weather is demo data.</li>
+      <li>Hold to talk uses your mic only while held. Your browser does the speech recognition and Mochi's voice (Chrome and Edge send speech to their own service). Nothing is recorded or stored here.</li>
+      <li><a href="https://github.com/MONKEYDPARI019/DeskBuddy-v2" target="_blank" rel="noopener">DeskBuddy-v2 source on GitHub<span class="arr" aria-hidden="true"> ↗</span></a></li>
+    </ul>
   </div>
 </section>
 
@@ -265,7 +273,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="sec-head reveal">
       <p class="kicker"><span class="blk" aria-hidden="true"></span>01 — 06</p>
       <h2 class="sec-title" id="projT">PROJECTS.DIR</h2>
-      <p class="sec-sub">Six builds, ordered the way I learned them rather than the way they'd look best. Each has four screens: <b>README</b> is why it exists and what went wrong, <b>CODE</b> is the complete sketch, <b>CIRCUIT</b> is drawn from the pin assignments in that sketch, and <b>PARTS</b> is what it takes to build one.</p>
+      <p class="sec-sub">Six builds, in the order I learned them. Each card: <b>README</b> (why, and what went wrong), <b>CODE</b>, <b>CIRCUIT</b>, <b>PARTS</b>.</p>
     </div>
     <div class="plist">
 
@@ -276,7 +284,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
       <div class="ptags"><span class="tag">BEGINNER</span><span class="tag tag-st">BUILT</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">01</span>nRF24L01 Link</h3>
       <p class="pmeta">ARDUINO NANO ×2 · SPI · 2.4 GHz</p>
-      <p class="ptag">Two boards, one struct, fifty packets a second. The simplest useful thing a radio can do — and the foundation everything else radio-shaped is built on.</p>
+      <p class="ptag">Two boards, one struct, 50 packets a second. The simplest useful radio link.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="2">2</b><span>boards</span></div><div class="stat"><b data-count="32">32</b><span>byte payload</span></div><div class="stat"><b data-count="20">20</b><span>ms interval</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/nRF24L01_transmitter_and_receiver" target="_blank" rel="noopener">github.com/MONKEYDPARI019/nRF24L01_transmitter_and_receiver <span aria-hidden="true">&#8599;</span></a>
@@ -284,9 +292,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     </header>
     <div class="ptabs" role="tablist" aria-label="nRF24L01 Link details"><button class="oledbtn" type="button" role="tab" id="nrf-t-readme" aria-controls="nrf-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="nrf-t-code" aria-controls="nrf-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="nrf-t-circuit" aria-controls="nrf-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="nrf-t-parts" aria-controls="nrf-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="nrf-readme" aria-labelledby="nrf-t-readme"><p>My 5th-semester college mini project. A joystick on one Arduino, live values on another, with the receiver counting packets and shouting on the serial monitor the moment the link drops — because a wireless link that fails silently is worse than one that fails loudly.</p>
-<p>Deliberately minimal and deliberately extensible. One joystick is two channels; widening the struct on both sides is all it takes to add more.</p>
-<p class="warn"><b>The capacitor is not optional.</b> The nRF24L01 draws sharp current spikes on transmit and the Arduino's 3.3V regulator cannot keep up. Without 10µF soldered directly across the module's VCC and GND, it works at arm's length and then fails at random. This is the single most common reason these modules "don't work".</p></div>
+      <div class="ppanel prose" role="tabpanel" id="nrf-readme" aria-labelledby="nrf-t-readme"><ul class="bul"><li>5th-semester college mini project: a joystick on one Arduino, live values on another.</li><li>The receiver counts packets and warns on the serial monitor (text console over USB) the moment the link drops.</li><li>Widen the data struct on both sides to add more channels.</li></ul><p class="warn"><b>The capacitor is not optional.</b> Solder 10µF across the module's VCC and GND, or it fails at random: transmit current spikes overwhelm the 3.3V regulator.</p></div>
       <div class="ppanel" role="tabpanel" id="nrf-code" aria-labelledby="nrf-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">transmitter.ino</span><span class="clines">34 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="nrf-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="nrf-src-0">#include &lt;SPI.h&gt;
 #include &lt;nRF24L01.h&gt;
 #include &lt;RF24.h&gt;
@@ -414,7 +420,7 @@ void loop() {
 <text x="555" y="260" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle">10uF across VCC</text>
 <path d="M710 300 H840" stroke="#8a8a8a" stroke-width="1.3" fill="none" class="tr"/><text x="775" y="316" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle">USB / serial 9600</text>
 <text x="0" y="410" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">SPI is fixed by hardware. Only CE and CSN are chosen in software: RF24 radio(9, 10).</text>
-</svg></div></div><p class="cnote">SPI is fixed by the Arduino's hardware peripheral — only CE and CSN are chosen in software. The receiver calls <code>radio.printDetails()</code> at boot; if those registers print as all zeros or all 0xFF, the Arduino is not talking to the radio at all.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li>Only CE and CSN are chosen in software; the SPI (Serial Peripheral Interface) pins are fixed by the Arduino.</li><li>The receiver calls <code>radio.printDetails()</code> at boot. All zeros or all 0xFF means the radio is not connected.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="nrf-parts" aria-labelledby="nrf-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">ARDUINO NANO ×2</li><li class="chip">nRF24L01+ ×2</li><li class="chip">ANALOG JOYSTICK</li><li class="chip">10µF ×2</li><li class="chip">3.3V RAIL — NOT 5V</li></ul></div>
     </div>
   </div>
@@ -427,7 +433,7 @@ void loop() {
       <div class="ptags"><span class="tag">BEGINNER+</span><span class="tag tag-st">BUILT</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">02</span>ESP32 RC Car</h3>
       <p class="pmeta">ESP32 · SOFTAP · L298N · SALVAGE BUILD</p>
-      <p class="ptag">Bought broken from a scrap pile, brain replaced. The car hosts its own WiFi network and serves the controls itself — no app, no pairing, no internet.</p>
+      <p class="ptag">Bought broken, brain replaced. The car hosts its own WiFi and serves its own controls.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="6">6</b><span>GPIO</span></div><div class="stat"><b data-count="80">80</b><span>port</span></div><div class="stat"><b data-count="0">0</b><span>apps installed</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/ESP32_RC_car" target="_blank" rel="noopener">github.com/MONKEYDPARI019/ESP32_RC_car <span aria-hidden="true">&#8599;</span></a>
@@ -435,9 +441,7 @@ void loop() {
     </header>
     <div class="ptabs" role="tablist" aria-label="ESP32 RC Car details"><button class="oledbtn" type="button" role="tab" id="rc-t-readme" aria-controls="rc-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="rc-t-code" aria-controls="rc-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="rc-t-circuit" aria-controls="rc-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="rc-t-parts" aria-controls="rc-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="rc-readme" aria-labelledby="rc-t-readme"><p>The ESP32 runs in access-point mode, which means it <em>is</em> the network rather than joining one. Your phone connects to <code>ESP32-RC</code>, opens <code>192.168.4.1</code>, and drives. Nothing else is involved.</p>
-<p>Buttons use <code>ontouchstart</code> and <code>ontouchend</code>, so the car moves while your thumb is down and stops when you let go — the closest a web page gets to a dead-man's switch.</p>
-<p>Most cheap RC cars steer with a plain DC motor pushing against a return spring rather than a servo. That is why steering here is just another H-bridge channel, not a PWM angle.</p></div>
+      <div class="ppanel prose" role="tabpanel" id="rc-readme" aria-labelledby="rc-t-readme"><ul class="bul"><li>The ESP32 runs as a WiFi access point, so it <em>is</em> the network. Join <code>ESP32-RC</code>, open <code>192.168.4.1</code>, drive.</li><li>It moves while your thumb is down and stops on release, like a dead-man's switch.</li><li>Steering is a plain DC motor on an H-bridge channel, not a servo.</li></ul></div>
       <div class="ppanel" role="tabpanel" id="rc-code" aria-labelledby="rc-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">ESP32_RC_car.ino</span><span class="clines">123 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="rc-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="rc-src-0">#include &lt;WiFi.h&gt;
 #include &lt;WebServer.h&gt;
 
@@ -592,7 +596,7 @@ void loop() {
 <text x="0" y="60" fill="#fb923c" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="0.08em">PHONE JOINS "ESP32-RC" -- NO ROUTER, NO INTERNET</text>
 <path d="M115 130 V70 H420" stroke="#fb923c" stroke-width="1.1" fill="none" stroke-dasharray="4 4" class="tr"/>
 <text x="0" y="414" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">Grounds must be common: battery -, L298N GND and ESP32 GND all tied together.</text>
-</svg></div></div><p class="cnote">Left and right came out backwards on the first drive. Swapping two <code>#define</code> lines was faster than unsoldering the steering motor — the comment in the code is the honest record of that.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li>Left and right came out backwards on the first drive.</li><li>Swapping two <code>#define</code> lines was faster than unsoldering the steering motor.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="rc-parts" aria-labelledby="rc-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">ESP32 DEVKIT</li><li class="chip">L298N H-BRIDGE</li><li class="chip">DC MOTOR ×2</li><li class="chip">SALVAGED CHASSIS</li><li class="chip">7.4V PACK</li></ul></div>
     </div>
   </div>
@@ -605,7 +609,7 @@ void loop() {
       <div class="ptags"><span class="tag">INTERMEDIATE</span><span class="tag tag-st st-warn">SHORTED</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">03</span>MP3 Player</h3>
       <p class="pmeta">PRO MINI · DFPLAYER · PAM8403 · VEROBOARD</p>
-      <p class="ptag">It worked. Tracks played, volume moved, the OLED kept up — and then a short between two crowded solder joints killed the DFPlayer and took the build with it.</p>
+      <p class="ptag">It worked. Then a short circuit between crowded solder joints killed the DFPlayer.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="30">30</b><span>volume steps</span></div><div class="stat"><b data-count="2048">2048</b><span>bytes of RAM</span></div><div class="stat"><b data-count="1">1</b><span>short circuit</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/MP3-Player" target="_blank" rel="noopener">github.com/MONKEYDPARI019/MP3-Player <span aria-hidden="true">&#8599;</span></a>
@@ -613,9 +617,7 @@ void loop() {
     </header>
     <div class="ptabs" role="tablist" aria-label="MP3 Player details"><button class="oledbtn" type="button" role="tab" id="mp3-t-readme" aria-controls="mp3-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="mp3-t-code" aria-controls="mp3-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="mp3-t-circuit" aria-controls="mp3-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="mp3-t-parts" aria-controls="mp3-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="mp3-readme" aria-labelledby="mp3-t-readme"><p>This one started years ago, chasing the iPod. First attempt was an ESP32 with a DFPlayer Mini and Bluetooth — and a lesson I did not see coming: <b>source and sink are strict roles.</b> I assumed my player could connect to any Bluetooth speaker whenever I got tired of wires. It cannot. I found A2DP, implemented it, and got a connection that held for a few seconds and dropped.</p>
-<p>So I cut scope instead of forcing it. Bluetooth went in the bin; the standalone player stayed — tracks off SD or USB through the DFPlayer Mini, volume and transport handled by the microcontroller, an OLED showing what just happened. The audio came out far too quiet, so a <b>PAM8403</b> class-D amplifier went in. Then I moved the whole thing to a compact Arduino Pro Mini on veroboard.</p>
-<p class="warn"><b>And that is where it died.</b> I soldered without a placement plan. Components ended up too close, the wiring turned into a nest, and a short took out the DFPlayer Mini. The design was finished and working — the build was not recoverable. Blueprint first, placement second, solder last. I paid for that lesson in hardware.</p></div>
+      <div class="ppanel prose" role="tabpanel" id="mp3-readme" aria-labelledby="mp3-t-readme"><ul class="bul"><li>Started years ago, chasing the iPod. First try: ESP32 + DFPlayer Mini + Bluetooth.</li><li>Lesson: Bluetooth source and sink are strict roles. The A2DP (Bluetooth audio) link kept dropping, so I dropped Bluetooth.</li><li>Final design: DFPlayer plays SD/USB tracks, a <b>PAM8403</b> amplifier fixes the quiet audio, an OLED shows status, all on an Arduino Pro Mini on veroboard.</li></ul><p class="warn"><b>It died at the soldering stage.</b> No placement plan, crowded joints, one short, dead DFPlayer. Blueprint first, placement second, solder last.</p></div>
       <div class="ppanel" role="tabpanel" id="mp3-code" aria-labelledby="mp3-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">mp3_pro_mini.ino</span><span class="clines">139 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="mp3-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="mp3-src-0">#include &lt;Arduino.h&gt;
 #include &lt;SoftwareSerial.h&gt;
 #include &lt;DFRobotDFPlayerMini.h&gt;
@@ -798,7 +800,7 @@ void loop() {
 <path d="M340 320 H250 V420 H600 V440" stroke="#f2f2f2" stroke-width="1.6" fill="none" class="tr"/>
 <text x="360" y="416" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">5V rail -- amp and DFPlayer share it, grounds common</text>
 <text x="0" y="462" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">Built on veroboard. A short between two crowded joints took out the DFPlayer -- the reason this one is a story, not a product.</text>
-</svg></div></div><p class="cnote">Two things on a Pro Mini make this tighter than it looks: <code>SoftwareSerial</code> and the I²C display are competing for 2KB of RAM, which is why the OLED runs in U8g2's <b>page mode</b> (<code>_1_</code> in the constructor) instead of holding a full frame buffer. The 1kΩ resistor on the DFPlayer's RX line is a level-matching series resistor, not optional decoration.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li><code>SoftwareSerial</code> and the I²C (two-wire) display share 2KB of RAM, so the OLED uses U8g2 <b>page mode</b> instead of a full frame buffer.</li><li>The 1kΩ resistor on the DFPlayer RX line matches voltage levels. It is not decoration.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="mp3-parts" aria-labelledby="mp3-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">ARDUINO PRO MINI</li><li class="chip">DFPLAYER MINI</li><li class="chip">PAM8403 AMP</li><li class="chip">SH1106 128×64</li><li class="chip">BUTTON ×3</li><li class="chip">SPEAKER 4-8Ω</li><li class="chip">1kΩ ON DF RX</li><li class="chip">VEROBOARD</li></ul></div>
     </div>
   </div>
@@ -811,7 +813,7 @@ void loop() {
       <div class="ptags"><span class="tag">INTERMEDIATE</span><span class="tag tag-st">BUILT</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">04</span>ESP8266 Surveying Node</h3>
       <p class="pmeta">NODEMCU · DHT11 · HC-SR04 · I²C OLED</p>
-      <p class="ptag">Three peripherals, three different protocols, one board — and a web server that never stalls waiting for any of them.</p>
+      <p class="ptag">Three sensors, three protocols, one board, and a web server that never stalls.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="3">3</b><span>measurements</span></div><div class="stat"><b data-count="2">2</b><span>second poll</span></div><div class="stat"><b data-count="0">0</b><span>delays in loop</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/ESP8266_surveying" target="_blank" rel="noopener">github.com/MONKEYDPARI019/ESP8266_surveying <span aria-hidden="true">&#8599;</span></a>
@@ -819,9 +821,7 @@ void loop() {
     </header>
     <div class="ptabs" role="tablist" aria-label="ESP8266 Surveying Node details"><button class="oledbtn" type="button" role="tab" id="surv-t-readme" aria-controls="surv-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="surv-t-code" aria-controls="surv-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="surv-t-circuit" aria-controls="surv-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="surv-t-parts" aria-controls="surv-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="surv-readme" aria-labelledby="surv-t-readme"><p>A bench instrument for RC work: ambient temperature, humidity and a range measurement, shown on a local OLED and served on a page over the house WiFi.</p>
-<p>The interesting part is not the sensors, it is the scheduling. An I²C display, a one-wire DHT11 and a timed ultrasonic echo all want the processor at different moments, and a web server wants it constantly. Everything is polled on a <code>millis()</code> timer so <code>server.handleClient()</code> is never left waiting.</p>
-<p class="warn"><b>Level mismatch:</b> the HC-SR04 runs on 5V and its ECHO pin swings to 5V, while the ESP8266 is a 3.3V part. It usually survives. The correct fix is a 1kΩ/2kΩ divider on ECHO.</p></div>
+      <div class="ppanel prose" role="tabpanel" id="surv-readme" aria-labelledby="surv-t-readme"><ul class="bul"><li>A bench instrument for RC work: temperature, humidity and distance, shown on an OLED and a web page.</li><li>Everything is polled on a <code>millis()</code> timer, so <code>server.handleClient()</code> never waits.</li></ul><p class="warn"><b>Level mismatch:</b> the HC-SR04 ECHO pin swings to 5V but the ESP8266 is a 3.3V part. Fix: a 1kΩ/2kΩ divider.</p></div>
       <div class="ppanel" role="tabpanel" id="surv-code" aria-labelledby="surv-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">humid.ino</span><span class="clines">107 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="surv-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="surv-src-0">#include &lt;Wire.h&gt;
 #include &lt;U8g2lib.h&gt;
 #include &lt;DHT.h&gt;
@@ -960,7 +960,7 @@ void loop() {
 <text x="775" y="304" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle">115200 baud</text>
 <path d="M530 276 H700" stroke="#8a8a8a" stroke-width="1.3" fill="none" class="tr"/>
 <text x="0" y="424" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">Sensors are polled on a 2 s millis() timer so server.handleClient() is never blocked.</text>
-</svg></div></div><p class="cnote">0.034 is the speed of sound in centimetres per microsecond. The divide by two is because the pulse travels to the object <em>and back</em>. Anything reading 0 or over 400cm is thrown away as out of range.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li>0.034 is the speed of sound in cm per µs. Divide by 2 because the pulse travels there and back.</li><li>Readings of 0 or over 400cm are discarded as out of range.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="surv-parts" aria-labelledby="surv-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">NODEMCU ESP8266</li><li class="chip">DHT11</li><li class="chip">HC-SR04</li><li class="chip">SH1106 128×64</li><li class="chip">1k + 2k DIVIDER</li></ul></div>
     </div>
   </div>
@@ -973,7 +973,7 @@ void loop() {
       <div class="ptags"><span class="tag">ADVANCED</span><span class="tag tag-st">BUILT</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">05</span>65W PD Power Bank</h3>
       <p class="pmeta">LITHIUM · INA260 · HAND-SOLDERED</p>
-      <p class="ptag">The only project here where a mistake costs you a battery instead of an afternoon. Three cells in series, a protection board, and a Nano whose only job is to tell the truth.</p>
+      <p class="ptag">The one project where a mistake costs a battery. Three cells, a protection board, and a Nano that only reports.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="65">65</b><span>watts</span></div><div class="stat"><b data-count="11.1">11.1</b><span>volts nominal</span></div><div class="stat"><b data-count="2500">2500</b><span>mAh</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/65W-PD-powerbank" target="_blank" rel="noopener">github.com/MONKEYDPARI019/65W-PD-powerbank <span aria-hidden="true">&#8599;</span></a>
@@ -981,9 +981,7 @@ void loop() {
     </header>
     <div class="ptabs" role="tablist" aria-label="65W PD Power Bank details"><button class="oledbtn" type="button" role="tab" id="pwr-t-readme" aria-controls="pwr-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="pwr-t-code" aria-controls="pwr-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="pwr-t-circuit" aria-controls="pwr-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="pwr-t-parts" aria-controls="pwr-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="pwr-readme" aria-labelledby="pwr-t-readme"><p>A power bank I could actually trust. Three 18650 cells in series behind a protection board, a fast-charge module doing the PD negotiation, and an Arduino Nano watching the whole thing through an INA260 current sensor.</p>
-<p>The Nano is <b>not</b> in the power path. Every amp flows through the BMS and the PD module; the microcontroller only measures and displays. If the firmware crashes, the power bank keeps working — which is the entire point of that separation.</p>
-<p>State of charge is a straight linear map from 9.0V to 12.6V. Accurate at rest, optimistic under load, because a loaded pack sags. Coulomb counting is the obvious next step.</p></div>
+      <div class="ppanel prose" role="tabpanel" id="pwr-readme" aria-labelledby="pwr-t-readme"><ul class="bul"><li>Three 18650 cells in series behind a BMS (battery management system) protection board, a PD (Power Delivery) fast-charge module, and an Arduino Nano watching through an INA260 current sensor.</li><li>The Nano is <b>not</b> in the power path. If the firmware crashes, power keeps flowing.</li><li>State of charge is a linear map from 9.0V to 12.6V: accurate at rest, optimistic under load. Next step: coulomb counting.</li></ul></div>
       <div class="ppanel" role="tabpanel" id="pwr-code" aria-labelledby="pwr-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">65W_PD_pwrbnk.ino</span><span class="clines">131 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="pwr-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="pwr-src-0">#include &lt;Wire.h&gt;
 #include &lt;Adafruit_INA260.h&gt;
 #include &lt;U8g2lib.h&gt;
@@ -1155,7 +1153,7 @@ void loop() {
 <path d="M330 300 H250 V360 H410" stroke="#f2f2f2" stroke-width="1.6" fill="none" class="tr"/><text x="180" y="304" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">5V / GND</text>
 <text x="0" y="404" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">The Nano is not in the power path. If it crashes, the power bank keeps working.</text>
 <text x="0" y="422" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">Charging is detected by the sign of the current, not by a separate sense pin.</text>
-</svg></div></div><p class="cnote">The INA260 sits <em>in series</em> on the positive side, between the protection board output and the fast-charge module input, so every amp in or out passes through its internal shunt. Charging is detected from the sign of that current — no separate sense pin.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li>The INA260 sits in series on the positive side, so every amp passes through its shunt.</li><li>Charging is detected from the sign of the current. No extra sense pin.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="pwr-parts" aria-labelledby="pwr-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">ARDUINO NANO</li><li class="chip">INA260</li><li class="chip">SH1106 128×64</li><li class="chip">3S BMS</li><li class="chip">18650 ×3 · 2500mAh</li><li class="chip">65W PD MODULE</li></ul></div>
     </div>
   </div>
@@ -1168,7 +1166,7 @@ void loop() {
       <div class="ptags"><span class="tag">ADVANCED</span><span class="tag tag-st st-muted">SUPERSEDED BY V2</span></div>
       <h3 class="pname"><span class="pnum" aria-hidden="true">06</span>DeskBuddy</h3>
       <p class="pmeta">ESP8266 · MQTT · LITTLEFS · MOCHI</p>
-      <p class="ptag">Not a sketch — a product. WiFi provisioning, persistent config, two notification transports, and a character called Mochi who blinks at you between alerts.</p>
+      <p class="ptag">A product, not a sketch: WiFi setup, saved config, two notification routes, and Mochi.</p>
       <div class="pside">
         <div class="stats"><div class="stat"><b data-count="8">8</b><span>GPIO used</span></div><div class="stat"><b data-count="3">3</b><span>strapping pins</span></div><div class="stat"><b data-count="2">2</b><span>transports</span></div></div>
         <a class="repolink" href="https://github.com/MONKEYDPARI019/DeskBuddy" target="_blank" rel="noopener">github.com/MONKEYDPARI019/DeskBuddy <span aria-hidden="true">&#8599;</span></a>
@@ -1176,10 +1174,7 @@ void loop() {
     </header>
     <div class="ptabs" role="tablist" aria-label="DeskBuddy details"><button class="oledbtn" type="button" role="tab" id="desk-t-readme" aria-controls="desk-readme" aria-selected="true" tabindex="0"><span class="ob-scr"><span class="ob-lbl">README</span><span class="ob-st">ON</span></span></button><button class="oledbtn" type="button" role="tab" id="desk-t-code" aria-controls="desk-code" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CODE</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="desk-t-circuit" aria-controls="desk-circuit" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">CIRCUIT</span><span class="ob-st">OFF</span></span></button><button class="oledbtn" type="button" role="tab" id="desk-t-parts" aria-controls="desk-parts" aria-selected="false" tabindex="-1"><span class="ob-scr"><span class="ob-lbl">PARTS</span><span class="ob-st">OFF</span></span></button></div>
     <div class="ppanels">
-      <div class="ppanel prose" role="tabpanel" id="desk-readme" aria-labelledby="desk-t-readme"><p>A desk companion built on a Wemos D1 Mini. It shows a clock and the weather, forwards phone notifications over HTTP or MQTT, and renders an animated face — Mochi — on a 128×64 frame buffer between alerts.</p>
-<p>Configuration is held in LittleFS so it survives reboots, and there is a captive config portal for first-run WiFi setup instead of credentials baked into the sketch.</p>
-<p class="warn"><b>All eight usable GPIOs are in play, and three of them decide how the ESP8266 boots.</b> GPIO0 and GPIO2 must read HIGH at power-on, GPIO15 must read LOW. DeskBuddy drives all three — as pure outputs with no added pull resistors, which is the only reason it boots at all.</p>
-<p>The one repo that was properly documented from the start: hardware, wiring, pinout, concepts, troubleshooting and a user manual all live alongside the firmware.</p></div>
+      <div class="ppanel prose" role="tabpanel" id="desk-readme" aria-labelledby="desk-t-readme"><ul class="bul"><li>Wemos D1 Mini desk companion: clock, weather, phone notifications over HTTP or MQTT (a light messaging protocol), and an animated face called Mochi.</li><li>Settings live in LittleFS (flash storage) and survive reboots. A captive portal (setup web page) handles first-run WiFi.</li><li>The one repo documented from the start.</li></ul><p class="warn"><b>All 8 usable GPIOs (general-purpose pins) are in use, 3 of them boot-critical.</b> GPIO0 and GPIO2 must read HIGH at power-on, GPIO15 LOW. They are driven as plain outputs with no pull resistors.</p></div>
       <div class="ppanel" role="tabpanel" id="desk-code" aria-labelledby="desk-t-code" hidden><div class="cblock"><div class="cbar"><span class="cfile">DeskBuddy_v1.0_Stable.ino</span><span class="clines">1283 LINES</span><button class="btn btn-sm copybtn" type="button" data-copy="desk-src-0">COPY</button></div><div class="cscroll" data-lenis-prevent><pre><code id="desk-src-0">/*
  ╔═══════════════════════════════════════════════════════════════╗
  ║              🌸  DESK BUDDY  —  ESP8266 Firmware v2.5        ║
@@ -2502,7 +2497,7 @@ void loop() {
 <text x="350" y="400" fill="#fb923c" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="0.08em">* GPIO0 / 2 / 15 ARE BOOT-STRAPPING PINS</text>
 <text x="350" y="418" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">0 and 2 must be HIGH at power-on, 15 must be LOW. No added pull resistors here.</text>
 <text x="0" y="440" fill="#9a9a9a" font-family="IBM Plex Mono,monospace" font-size="8.5">Notifications arrive over HTTP or MQTT; config persists in LittleFS across reboots.</text>
-</svg></div></div><p class="cnote">Two decoupling capacitors — 100µF bulk and 0.1µF ceramic — sit as close to the 3V3 pin as they physically fit. They were added after the board reset under combined WiFi, display, LED and buzzer load. That is not theory; that is a bug that was found and fixed.</p></div>
+</svg></div></div><div class="cnote"><ul class="bul"><li>100µF + 0.1µF decoupling capacitors sit right next to the 3V3 pin.</li><li>Added after the board reset under combined WiFi, display, LED and buzzer load. A real bug, fixed.</li></ul></div></div>
       <div class="ppanel" role="tabpanel" id="desk-parts" aria-labelledby="desk-t-parts" hidden><ul class="chips" aria-label="Parts list"><li class="chip">WEMOS D1 MINI</li><li class="chip">SH1106 128×64</li><li class="chip">LED ×3 + 470Ω</li><li class="chip">BUTTON ×2</li><li class="chip">PASSIVE PIEZO</li><li class="chip">100µF + 0.1µF</li></ul></div>
     </div>
   </div>
@@ -2519,7 +2514,7 @@ void loop() {
       <div class="con-grid">
         <div>
           <p class="con-big">SEND A <span class="acc">PING.</span></p>
-          <p class="lead">Internships, hardware collaborations, or a bug you spotted in one of my circuits — all welcome.</p>
+          <p class="lead">Internships, hardware collaborations, or a bug in one of my circuits.</p>
         </div>
         <ul class="con-links">
           <li><a class="btn btn-acc btn-block" href="https://www.linkedin.com/in/parinith-md-26a4a126a" target="_blank" rel="noopener"><span>LINKEDIN</span><span class="arr" aria-hidden="true">↗</span></a></li>
@@ -2537,10 +2532,10 @@ void loop() {
   <div class="wrap foot-grid">
     <div>
       <p class="label">HOW THIS WAS BUILT</p>
-      <p>The hardware, the firmware and the debugging in every project here are mine. The web page is not my usual territory — I directed the design, picked what went on it and checked the technical content, but the HTML, CSS and JavaScript were written with Claude. DeskBuddy v2's firmware and app were also built with Claude as a coding partner; the repo says exactly who did what.</p>
+      <ul class="bul"><li>Hardware, firmware and debugging in every project here are mine.</li><li>The web page code (HTML, CSS, JavaScript) was written with Claude under my direction. DeskBuddy v2's firmware and app also used Claude as a coding partner. The repo says who did what.</li></ul>
     </div>
     <div class="foot-r">
-      <p>Still building — the next one involves a battery that reports its own health.</p>
+      <p>Still building: a battery that reports its own health.</p>
       <p class="foot-meta">© <span id="yr">2026</span> PARINITH M D · <a href="#top">BACK TO TOP<span class="arr" aria-hidden="true"> ↑</span></a></p>
     </div>
   </div>
